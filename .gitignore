@@ -1,4 +1,30 @@
+# 依赖
 node_modules/
 **/node_modules/
+
+# 构建产物（Astro / 本地预览）
+dist/
+.astro/
+
+# 环境变量与密钥
+.env
+.env.*
+!.env.example
+
+# 日志与系统文件
+*.log
+.DS_Store
+Thumbs.db
+
+# 编辑器 / IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Python 缓存（仓库内其它脚本可能用到）
 **/__pycache__/
 /tmp-docx-feasibility/
+
+# 调试草稿（非站点源码）
+zzz-prompt-debug/
