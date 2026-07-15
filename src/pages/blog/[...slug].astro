@@ -1,0 +1,126 @@
+---
+import { getCollection, render } from 'astro:content';
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+export const getStaticPaths = (async () => {
+  const posts = await getCollection('posts', ({ data }) => !data.draft);
+
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}) satisfies GetStaticPaths;
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+
+const formattedDate = post.data.pubDate.toLocaleDateString('zh-CN', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+
+const base = import.meta.env.BASE_URL;
+---
+
+<BaseLayout title={post.data.title} description={post.data.description}>
+  <article class="post">
+    <header class="post__header">
+      <p class="post__back">
+        <a href={`${base}blog/`}>← 返回博客列表</a>
+      </p>
+      <h1 class="post__title">{post.data.title}</h1>
+      <time class="post__date" datetime={post.data.pubDate.toISOString()}>
+        {formattedDate}
+      </time>
+      <p class="post__desc muted">{post.data.description}</p>
+    </header>
+
+    <div class="post__body">
+      <Content />
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .post__header {
+    margin-bottom: 2rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .post__back {
+    margin: 0 0 1rem;
+    font-size: 0.9rem;
+  }
+
+  .post__back a {
+    color: var(--color-text-muted);
+    text-decoration: none;
+  }
+
+  .post__back a:hover {
+    color: var(--color-accent);
+  }
+
+  .post__title {
+    margin: 0 0 0.5rem;
+    font-size: 1.85rem;
+    color: var(--color-text);
+  }
+
+  .post__date {
+    display: block;
+    margin-bottom: 0.75rem;
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+  }
+
+  .post__desc {
+    margin: 0;
+    font-size: 1rem;
+  }
+
+  .post__body {
+    color: var(--color-text);
+  }
+
+  .post__body :global(h2),
+  .post__body :global(h3),
+  .post__body :global(h4) {
+    margin-top: 1.75rem;
+    margin-bottom: 0.75rem;
+    color: var(--color-text);
+  }
+
+  .post__body :global(p),
+  .post__body :global(li) {
+    color: var(--color-text);
+  }
+
+  .post__body :global(a) {
+    color: var(--color-accent);
+  }
+
+  .post__body :global(a:hover) {
+    color: var(--color-highlight);
+  }
+
+  .post__body :global(ul),
+  .post__body :global(ol) {
+    padding-left: 1.25rem;
+  }
+
+  .post__body :global(code) {
+    font-size: 0.9em;
+    padding: 0.1em 0.35em;
+    border-radius: var(--radius-sm);
+    background-color: var(--color-surface);
+  }
+
+  .post__body :global(pre code) {
+    padding: 0;
+    background: transparent;
+  }
+</style>

@@ -1,0 +1,94 @@
+---
+const base = import.meta.env.BASE_URL;
+const pathname = Astro.url.pathname;
+
+const navItems = [
+  { label: '首页', href: base },
+  { label: '博客', href: `${base}blog/` },
+  { label: '工具', href: `${base}tools/` },
+];
+
+function isActive(href: string): boolean {
+  const normalizedPath = pathname.endsWith('/') ? pathname : `${pathname}/`;
+  const normalizedHref = href.endsWith('/') ? href : `${href}/`;
+
+  if (normalizedHref === base || normalizedHref === `${base}`) {
+    return normalizedPath === base || normalizedPath === '/';
+  }
+
+  return normalizedPath.startsWith(normalizedHref);
+}
+---
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="site-header__brand" href={base}>無限凜</a>
+    <nav class="site-header__nav" aria-label="主导航">
+      {
+        navItems.map((item) => (
+          <a
+            href={item.href}
+            class:list={['site-header__link', { 'is-active': isActive(item.href) }]}
+            aria-current={isActive(item.href) ? 'page' : undefined}
+          >
+            {item.label}
+          </a>
+        ))
+      }
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    border-bottom: 1px solid var(--color-border);
+    background-color: color-mix(in srgb, var(--color-bg) 92%, transparent);
+    backdrop-filter: blur(8px);
+  }
+
+  .site-header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    max-width: var(--layout-max-width);
+    margin-inline: auto;
+    padding-inline: var(--layout-gutter);
+    padding-block: 0.75rem;
+  }
+
+  .site-header__brand {
+    color: var(--color-text);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+  }
+
+  .site-header__brand:hover {
+    color: var(--color-accent);
+  }
+
+  .site-header__nav {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem 1rem;
+  }
+
+  .site-header__link {
+    color: var(--color-text-muted);
+    text-decoration: none;
+    font-size: 0.95rem;
+  }
+
+  .site-header__link:hover {
+    color: var(--color-highlight);
+  }
+
+  .site-header__link.is-active {
+    color: var(--color-accent);
+  }
+</style>

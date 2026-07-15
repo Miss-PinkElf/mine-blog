@@ -1,0 +1,133 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostCard from '../components/site/PostCard.astro';
+
+const base = import.meta.env.BASE_URL;
+const posts = (await getCollection('posts', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 2);
+---
+
+<BaseLayout title="無限凜" description="無限凜 — 开发者博客与小工具">
+  <section class="hero">
+    <p class="hero__eyebrow">Mugen Rin</p>
+    <h1 class="hero__title">無限凜</h1>
+    <p class="hero__lead muted">中文优先的静态小站：写博客，也放纯前端小工具。</p>
+  </section>
+
+  <section class="entries" aria-label="主要入口">
+    <a class="entry" href={`${base}blog/`}>
+      <h2 class="entry__title">博客</h2>
+      <p class="entry__desc">笔记与长文</p>
+    </a>
+    <a class="entry" href={`${base}tools/`}>
+      <h2 class="entry__title">工具</h2>
+      <p class="entry__desc">浏览器内小工具</p>
+    </a>
+  </section>
+
+  {
+    posts.length > 0 && (
+      <section class="recent" aria-label="最近文章">
+        <h2 class="recent__title">最近文章</h2>
+        <ul class="recent__list">
+          {posts.map((post) => (
+            <li>
+              <PostCard
+                title={post.data.title}
+                description={post.data.description}
+                pubDate={post.data.pubDate}
+                href={`${base}blog/${post.id}/`}
+              />
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+</BaseLayout>
+
+<style>
+  .hero {
+    margin-bottom: 2rem;
+  }
+
+  .hero__eyebrow {
+    margin: 0 0 0.5rem;
+    color: var(--color-accent);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+  }
+
+  .hero__title {
+    margin: 0 0 0.75rem;
+    font-size: clamp(2rem, 5vw, 2.75rem);
+  }
+
+  .hero__lead {
+    margin: 0;
+    max-width: 36rem;
+    font-size: 1rem;
+  }
+
+  .entries {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .entry {
+    display: block;
+    padding: 1.25rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background-color: var(--color-bg-elevated);
+    color: inherit;
+    text-decoration: none;
+    transition:
+      border-color 0.15s ease,
+      background-color 0.15s ease;
+  }
+
+  .entry:hover {
+    border-color: var(--color-accent);
+    background-color: var(--color-surface);
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .entry__title {
+    margin: 0 0 0.4rem;
+    font-size: 1.2rem;
+    color: var(--color-text);
+  }
+
+  .entry:hover .entry__title {
+    color: var(--color-accent);
+  }
+
+  .entry__desc {
+    margin: 0;
+    font-size: 0.95rem;
+    color: var(--color-text-muted);
+  }
+
+  .recent__title {
+    margin: 0 0 1rem;
+    font-size: 1.1rem;
+    color: var(--color-text-muted);
+    font-weight: 600;
+  }
+
+  .recent__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+</style>

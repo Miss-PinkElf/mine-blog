@@ -1,0 +1,73 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  pubDate: Date;
+  href: string;
+}
+
+const { title, description, pubDate, href } = Astro.props;
+
+const formattedDate = pubDate.toLocaleDateString('zh-CN', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+---
+
+<article class="post-card">
+  <a class="post-card__link" href={href}>
+    <h2 class="post-card__title">{title}</h2>
+    <time class="post-card__date" datetime={pubDate.toISOString()}>
+      {formattedDate}
+    </time>
+    <p class="post-card__desc">{description}</p>
+  </a>
+</article>
+
+<style>
+  .post-card {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background-color: var(--color-bg-elevated);
+    transition:
+      border-color 0.15s ease,
+      background-color 0.15s ease;
+  }
+
+  .post-card:hover {
+    border-color: var(--color-accent);
+    background-color: var(--color-surface);
+  }
+
+  .post-card__link {
+    display: block;
+    padding: 1.25rem 1.25rem 1.1rem;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .post-card__title {
+    margin: 0 0 0.4rem;
+    font-size: 1.2rem;
+    color: var(--color-text);
+  }
+
+  .post-card:hover .post-card__title {
+    color: var(--color-accent);
+  }
+
+  .post-card__date {
+    display: block;
+    margin-bottom: 0.6rem;
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+  }
+
+  .post-card__desc {
+    margin: 0;
+    font-size: 0.95rem;
+    color: var(--color-text-muted);
+    line-height: 1.55;
+  }
+</style>

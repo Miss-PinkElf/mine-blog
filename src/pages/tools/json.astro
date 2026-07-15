@@ -1,0 +1,30 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import JsonFormatter from '../../components/react/JsonFormatter';
+---
+
+<BaseLayout title="JSON 格式化" description="浏览器内 JSON 格式化与压缩">
+  <section class="tool-json">
+    <header class="tool-json__header">
+      <h1 class="tool-json__title">JSON 格式化</h1>
+      <p class="tool-json__lead muted">数据只在本地处理，不会上传服务器。</p>
+    </header>
+    <JsonFormatter client:load />
+  </section>
+</BaseLayout>
+
+<style>
+  .tool-json__header {
+    margin-bottom: 1.5rem;
+  }
+
+  .tool-json__title {
+    margin: 0 0 0.4rem;
+    font-size: 1.75rem;
+  }
+
+  .tool-json__lead {
+    margin: 0;
+    font-size: 0.95rem;
+  }
+</style>

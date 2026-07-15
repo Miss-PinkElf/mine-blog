@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="無限凜">
+  <rect width="32" height="32" fill="#000000"/>
+  <path
+    fill="none"
+    stroke="#39FF14"
+    stroke-width="2"
+    stroke-linecap="square"
+    d="M8 22 V10 L16 18 L24 10 V22"
+  />
+  <rect x="6" y="24" width="20" height="2" fill="#39FF14"/>
+</svg>
