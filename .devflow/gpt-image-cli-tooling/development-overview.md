@@ -38,3 +38,22 @@
 
 - 恢复：`state.md` → `checkpoints.md`
 - 续作：`spec/tasks.md` + `handoffs/` 最新 + NEXT-SESSION-PROMPT
+
+## 2026-07-16 增量（第二版）
+
+### 目标
+
+在第一版纯文生图之上，支持「参考图 + 文字」编辑，并提升无 jq 环境可用性；同时让 Codex 与 Claude 两套 skill 目录一致。
+
+### 过程摘要
+
+1. 实测确认多模态图文可用（curl）；Python urllib 曾遇 Cloudflare 1010  
+2. Align → Plan → Spec（T11–T15）→ Apply  
+3. 实现 `--image`、`lib/json_codec.*`、RESULT 扩展、双目录同步  
+4. Verify：无 jq 时 node 回退成功出图（约 74s）  
+5. 会话 Close/Handoff，T7/T8 留待下轮；延期项仍见 `deferred/`
+
+### 相关计划
+
+- `plans/2026-07-16-image-text-jq-align.md`
+- `plans/2026-07-16-image-text-jq-fallback-plan.md`

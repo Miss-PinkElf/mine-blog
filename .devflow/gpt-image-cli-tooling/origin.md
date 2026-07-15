@@ -24,6 +24,15 @@
 | 14 | 对话：默认 model 改为 gpt-image-2 | 2026-07-15 | 默认值 | 已吸收 |
 | 15 | 对话：收尾 / 新开对话 / 记录延期 | 2026-07-15 | Close+Handoff | 本轮 |
 | 16 | 本地：`scripts/generate-image.http`（含 key 调试） | 2026-07-15 | 仅本机 | 已 untrack，勿提交 |
+| 17 | 对话：测试图文同传 + 优化 skill | 2026-07-15/16 | 参考图+文字（A）+ jq 可用性（B）+ mission 文档 | 本轮 Align |
+| 18 | 实测图文编辑成功（curl + multimodal input） | 2026-07-15 | 协议与失败面证据 | 已吸收 |
+| 19 | 用户确认 A+B；Mac 主环境有 jq；完整 devflow | 2026-07-16 | 范围与流程 | 本轮 |
+| 20 | 对话：上下文过长，收尾 + commit + handoff | 2026-07-16 | Close 本轮；记录延期/下轮 | 本轮 |
+
+| 17 | 对话：测试图文同传 + 优化 skill | 2026-07-15/16 | 参考图+文字；A+B；完善 mission 文档 | 本轮 Align |
+| 18 | 实测：zzz-prompt-debug/origin/优化生成图片脚本/image.png 图文编辑成功 | 2026-07-15 | 协议：input_text+input_image(data URL)；curl 可用；Python urllib 遇 CF 1010 | 已吸收待落地 |
+| 19 | 对话：范围 A+B；主环境 Mac（有 jq）；走完整 devflow | 2026-07-16 | 路径：重型；本轮非仅 T7 | 本轮 |
+| 20 | 对话：上下文过长，收尾 + commit + handoff | 2026-07-16 | Close 本轮；记录延期/下轮 | 本轮 |
 
 ## 备注
 

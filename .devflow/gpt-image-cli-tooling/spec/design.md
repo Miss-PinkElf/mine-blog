@@ -108,3 +108,35 @@ generate-image.sh
 | `scripts/prompts-images/prompt-image.md` | 默认提示词 |
 | `scripts/generate-image.http` | REST Client |
 | `scripts/gen-images/` | 输出（本地） |
+
+## 2026-07-16 增量设计 · 图文同传与 JSON 回退
+
+### Skill 主入口（更新）
+
+```text
+.claude/skills/gpt-image-generate/run.sh   # 真相源
+        │ 同步
+        ▼
+.codex/skills/gpt-image-generate/run.sh    # Codex 调用副本
+```
+
+### 图文请求
+
+- CLI：`--image` / `-i`
+- Body：`input` 为 user content 数组；`tools[0].action = "edit"`
+- `image_url`：`data:<mime>;base64,<...>`
+- curl：`--data-binary @request.json`（避免超大 argv）
+
+### JSON 工具
+
+| 优先级 | 用途 |
+| --- | --- |
+| jq | 组装 body、抽取 result、摘要错误 |
+| node | 无 jq 时回退 |
+| python3/python | 无 jq/node 时回退 |
+| 系统 base64 | 仅解码二进制 |
+
+### 模式
+
+- `mode=text`：纯文生图
+- `mode=image_edit`：参考图编辑

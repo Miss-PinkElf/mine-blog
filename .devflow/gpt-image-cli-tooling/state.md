@@ -1,16 +1,16 @@
 # State · gpt-image-cli-tooling
 
-- **阶段**：Close / Handoff（本轮会话收尾）；第一版 CLI + Skill 已可用
+- **阶段**：Close / Handoff（本会话收尾，2026-07-16）
 - **路径**：Heavy
-- **本轮提交**（相关）：`f76cec2` / `e84276d` / `f35d114` 等（见 development-overview）
-- **第一版已完成**：
-  - 仓库脚本 `scripts/generate-image.sh`（可保留作对照）
-  - **主入口**：自包含 skill `.claude/skills/gpt-image-generate/`（`run.sh` + 同级 `.env`）
-  - 默认 model：`gpt-image-2`；重试 5 次；流式解码；Ctrl+C 可强制退出
-  - 成功输出 `---RESULT---`（耗时 / bytes / path）
-  - `scripts/generate-image.http` **仅本机**（已 untrack + ignore，勿再提交）
-- **未做（下轮）**：T7 size/ratio/quality；T8 正式 Verify
-- **延期**：见 `deferred/` 与 `backlog.md`
+- **本轮已交付（第二版增量）**：
+  - 图文同传：`--image` / `-i`，多模态 `input_text`+`input_image`，`action=edit`
+  - JSON 回退：jq → node(`lib/json_codec.cjs`) → python(`lib/json_codec.py`)
+  - RESULT：`mode` / `json_backend` / `source_image`
+  - 双目录：`.claude/skills/gpt-image-generate/`（真相源）↔ `.codex/skills/gpt-image-generate/`
+- **Verify**：node 回退路径实测 HTTP 200；`gen-images/2026-07-16-00-22-25.png`（约 1.67MB，~74s）
+- **第一版保留**：纯文生图、重试、中断、流式 base64、默认 `gpt-image-2`
+- **下轮优先**：T7 size/ratio/quality；T8 失败路径抽检
+- **明确延期**：异步 task、站点 UI、纯 aspect_ratio 官方字段（`deferred/`）
 - **阻塞**：无
-- **下一步**：新对话按 `NEXT-SESSION-PROMPT-gpt-image-cli-tooling.md`；优先 T7
-- **最新 handoff**：`handoffs/2026-07-15-001-session-close.md`
+- **最新 handoff**：`handoffs/2026-07-16-001-image-text-session-close.md`
+- **下次入口**：`NEXT-SESSION-PROMPT-gpt-image-cli-tooling.md`

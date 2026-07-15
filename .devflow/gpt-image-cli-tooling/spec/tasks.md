@@ -69,8 +69,36 @@
 - [x] NEXT-SESSION-PROMPT
 - [x] 提交收尾文档（不含 gitignore/config/tsconfig 的额外要求已遵守）
 
-## 当前建议执行顺序
+## T11 · 图文同传（参考图 + 文字）
 
-1. **下轮优先 T7** size/ratio/quality（skill `run.sh` 为主）
-2. 再 T8 Verify
-3. 延期项见 `deferred/`，勿在本 mission 偷做 Web UI
+- [x] CLI：`--image` / `-i PATH`
+- [x] 有图：多模态 input + `action=edit`；body 临时文件投递
+- [x] 无图：保持 generate 字符串 input
+- [x] RESULT：`mode` / `source_image`
+- [x] 参考图不存在/不可读时中文报错
+
+## T12 · Skill 文档
+
+- [x] 更新 `.claude/.../SKILL.md`（触发、用法、双路径 `.claude`/`.codex`）
+- [x] 更新 `references/notes.md`
+
+## T13 · JSON 工具链回退
+
+- [x] jq → node → python 探测
+- [x] 缺全部工具时分平台安装提示
+- [x] 禁止大 base64 进 bash 变量
+
+## T14 · 双目录同步 + gitignore
+
+- [x] 同步到 `.codex/skills/gpt-image-generate/`
+- [x] gitignore codex skill 的 `.env` / `gen-images/`
+
+## T15 · Verify + mission 收尾
+
+- [x] help / 语法 / 双目录 diff
+- [x] 更新 state/workflow/checkpoint（本轮）
+
+## 当前建议执行顺序（2026-07-16 更新）
+
+1. **本轮 T11–T15：已完成**（图文同传 + JSON 回退 + 双目录同步 + 实测）
+2. 后续：T7 size/ratio/quality → T8 完整 Verify

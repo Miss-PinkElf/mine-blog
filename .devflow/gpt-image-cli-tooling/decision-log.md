@@ -61,3 +61,28 @@
 - **决策**：从 git 取消跟踪并 ignore；本地文件保留
 - **原因**：易含 API Key；用户已禁用相关 key
 - **状态**：已生效
+
+## 2026-07-16 · 图文同传 + jq 回退 + 双 Skill 同步
+
+- **决策**：
+  1. CLI `--image`/`-i`；有图多模态 + `action=edit`；无图保持 generate
+  2. 真相源 `.claude/skills/gpt-image-generate/`，同步 `.codex/skills/gpt-image-generate/`
+  3. 解析链路：jq 首选抽 JSON；系统 `base64` 解码；无 jq 时 node → python 轻量回退；纯 bash 不解析大 JSON
+  4. 本轮不做 T7 size/ratio/quality
+- **原因**：实测接口支持图文；Mac 主环境有 jq；Windows 可能无 jq；Codex/Claude 双 skill 目录需一致
+- **状态**：Align 已确认方向，待用户复核 align 笔记后 Plan
+
+## 2026-07-16 · Apply 实现细节
+
+- **决策**：
+  1. `lib/json_codec.py` + `lib/json_codec.cjs` 作为无 jq 时的正式回退（非内联 heredoc）
+  2. 请求体始终写临时文件 + `curl --data-binary @file`
+  3. 有图 `action=edit`，无图 `generate`
+  4. 真相源 `.claude/...` 同步 `.codex/...`
+- **状态**：Apply 中
+
+## 2026-07-16 · 会话 Close / Handoff
+
+- **决策**：本轮收束于 T11–T15 完成态；T7/T8 留给新对话；异步/UI/纯 ratio 继续延期
+- **原因**：上下文过长；用户要求记录延期并交接
+- **状态**：已生效
