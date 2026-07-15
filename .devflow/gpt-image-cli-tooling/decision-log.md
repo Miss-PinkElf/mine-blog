@@ -40,3 +40,12 @@
 
 - **决策（方向）**：官方无独立 ratio-only 参数；用 `size: "宽x高"` 表达比例；`auto` 为当前默认
 - **状态**：待 Spec / Apply
+
+## 2026-07-15 · 封装为 Claude Skill
+
+- **决策**：在 `.claude/skills/gpt-image-generate/` 提供 skill；底层仍调用 `scripts/generate-image.sh`
+- **要点**：
+  - 缺 `jq` 必须提示用户安装，禁止硬跑
+  - 提示词可由用户给出或由 agent 按意图扩写
+  - 成功后必须汇报耗时、大小、路径（脚本输出 `---RESULT---`）
+- **状态**：已生效

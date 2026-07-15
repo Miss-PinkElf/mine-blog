@@ -1,38 +1,30 @@
 #!/usr/bin/env bash
-# 通过 OpenAI Responses 协议调用图像生成
-# Base URL: https://shell.wyzlab.ai/v1
+# gpt-image-generate skill 自包含生图脚本（OpenAI Responses + image_generation）
+# 本文件与 .env / gen-images / prompts 同级，不依赖仓库其它脚本。
 #
-# 配置优先级（从高到低）:
-#   1. 命令行参数（如 -m / --base-url / -o）
-#   2. 当前 shell 已 export 的环境变量
-#   3. scripts/.env 文件
-#   4. 脚本内置默认值
+# 目录约定（均相对本脚本所在目录）:
+#   .env                  API Key / Base URL / Model
+#   gen-images/           输出图片（自动创建）
+#   prompts/prompt-image.md  默认提示词（无 CLI 提示词时使用）
 #
-# 默认提示词文件: scripts/prompts-images/prompt-image.md
-#   - 文件不存在或内容为空：直接报错退出
-#   - 可用命令行参数覆盖提示词；可用 --prompt-file 指定其它文件
-#
-# 默认图片输出: scripts/gen-images/yyyy-mm-dd-hh-mm-ss.png
-# 若文件名重名，则追加随机数: yyyy-mm-dd-hh-mm-ss-<随机数>.png
+# 配置优先级:
+#   1. 命令行参数  2. 已 export 环境变量  3. 同级 .env  4. 内置默认
 #
 # 用法:
-#   1) 编辑 scripts/.env，填入 OPENAI_API_KEY
-#   2) 编辑 scripts/prompts-images/prompt-image.md，写入提示词
-#   3) ./scripts/generate-image.sh
-#   ./scripts/generate-image.sh --raw
-#   ./scripts/generate-image.sh --no-open
-#   ./scripts/generate-image.sh --prompt-file ./other.md
-#   ./scripts/generate-image.sh "命令行提示词会覆盖默认文件"
+#   1) 编辑与本脚本同级的 .env，填入 OPENAI_API_KEY
+#   2) ./run.sh "提示词"
+#   ./run.sh --no-open "提示词"
+#   ./run.sh            # 读 prompts/prompt-image.md
 #
-# 失败会自动重试（默认最多重试 5 次，含首次共 6 次尝试）
-# 覆盖范围：网络/curl 失败、HTTP 非 2xx（含 524）、解析/解码失败等
+# 失败自动重试（默认最多 5 次）
 
 set -euo pipefail
 
+# 全部路径只相对本 skill 目录，不向上找仓库根
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ENV_FILE="${SCRIPT_DIR}/.env"
 GEN_DIR="${SCRIPT_DIR}/gen-images"
-DEFAULT_PROMPT_FILE="${SCRIPT_DIR}/prompts-images/prompt-image.md"
+DEFAULT_PROMPT_FILE="${SCRIPT_DIR}/prompts/prompt-image.md"
 
 # 最多重试次数（不含首次）；总尝试次数 = MAX_RETRIES + 1
 MAX_RETRIES=5
@@ -162,7 +154,7 @@ interruptible_sleep() {
   done
 }
 
-# 自动读取 scripts/.env（若存在）
+# 自动读取与 run.sh 同级的 .env（若存在）
 # 不覆盖当前 shell 里已经 export 过的变量
 load_env_file() {
   local file="$1"
@@ -357,45 +349,36 @@ retry_sleep_seconds() {
 usage() {
   cat <<'EOF'
 用法:
-  ./scripts/generate-image.sh [选项] [提示词]
+  ./run.sh [选项] [提示词]
 
 默认提示词:
-  读取脚本同级目录: prompts-images/prompt-image.md
+  与本脚本同级: prompts/prompt-image.md
   文件不存在、为空、或只有空白字符时会报错退出
 
 选项:
-  -o, --output PATH        自定义输出图片路径（默认写入 scripts/gen-images/）
+  -o, --output PATH        自定义输出图片路径（默认写入同级 gen-images/）
   -m, --model NAME         Responses 主模型（默认: gpt-5.4）
   --base-url URL           API Base URL（默认: https://shell.wyzlab.ai/v1）
-  -p, --prompt-file PATH   指定提示词文件（默认: prompts-images/prompt-image.md）
+  -p, --prompt-file PATH   指定提示词文件（默认: prompts/prompt-image.md）
   --retries N              最多重试次数（默认 5，不含首次）
   --raw                    只打印完整 JSON，不解码图片
   --no-open                生成后不自动打开图片
   -h, --help               帮助
 
+配置:
+  与本脚本同级的 .env（OPENAI_API_KEY / OPENAI_BASE_URL / OPENAI_MODEL）
+
 提示词优先级:
   1. 命令行直接传入的提示词
   2. --prompt-file 指定的文件
-  3. 默认文件 prompts-images/prompt-image.md
-
-失败重试:
-  默认最多重试 5 次（共 6 次尝试）
-  覆盖：curl 失败、HTTP 非 2xx（含 524）、无图片数据、解码失败等
-  重试间隔：5s / 10s / 15s / 20s / 25s（上限 30s）
+  3. 默认文件 prompts/prompt-image.md
 
 默认输出:
-  scripts/gen-images/yyyy-mm-dd-hh-mm-ss.png
-  若重名: scripts/gen-images/yyyy-mm-dd-hh-mm-ss-<随机数>.png
+  gen-images/yyyy-mm-dd-hh-mm-ss.png（与 run.sh 同级）
 
 示例:
-  # 编辑默认提示词文件后直接跑
-  ./scripts/generate-image.sh
-
-  # 临时用命令行提示词覆盖文件
-  ./scripts/generate-image.sh "一只在樱花树下喝茶的橘猫，插画风格"
-
-  # 指定其它提示词文件
-  ./scripts/generate-image.sh --prompt-file ./prompts-images/other.md
+  ./run.sh "一只在樱花树下喝茶的橘猫，插画风格"
+  ./run.sh --no-open "赛博朋克城市"
 EOF
 }
 
@@ -474,14 +457,14 @@ done
 
 if [[ -z "$API_KEY" || "$API_KEY" == "你的key填这里" || "$API_KEY" == "sk-xxxx" ]]; then
   echo "错误: 未配置有效的 OPENAI_API_KEY" >&2
-  echo "请编辑 scripts/.env，把 OPENAI_API_KEY 改成你的真实 key" >&2
+  echo "请编辑与 run.sh 同级的 .env，填入真实 key" >&2
   echo "  文件路径: ${ENV_FILE}" >&2
+  echo "  可复制: cp \"${SCRIPT_DIR}/.env.example\" \"${ENV_FILE}\"" >&2
   exit 1
 fi
 
-# 提示词：命令行优先；否则读文件（默认 prompts-images/prompt-image.md）
+# 提示词：命令行优先；否则读 skill 内 prompts/prompt-image.md
 if [[ "$PROMPT_FROM_CLI" -eq 1 ]]; then
-  # 去掉首尾空白
   PROMPT="${PROMPT#"${PROMPT%%[![:space:]]*}"}"
   PROMPT="${PROMPT%"${PROMPT##*[![:space:]]}"}"
   if [[ -z "$PROMPT" ]]; then
@@ -490,8 +473,6 @@ if [[ "$PROMPT_FROM_CLI" -eq 1 ]]; then
   fi
   log "提示词来源: 命令行参数"
 else
-  # 相对路径按当前工作目录解析；绝对路径原样使用
-  # 若用户传的是相对路径且不存在，再尝试相对脚本目录
   if [[ "$PROMPT_FILE" != /* && ! -f "$PROMPT_FILE" && -f "${SCRIPT_DIR}/${PROMPT_FILE}" ]]; then
     PROMPT_FILE="${SCRIPT_DIR}/${PROMPT_FILE}"
   fi
@@ -722,11 +703,10 @@ fi
 
 FILE_SIZE="$(wc -c < "$OUTPUT" | tr -d ' ')"
 ELAPSED_SEC="$(elapsed_seconds)"
-# 相对仓库根的路径（便于 skill / 用户阅读）
-REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+# 相对 skill 目录（run.sh 同级）的路径
 OUTPUT_REL="$OUTPUT"
 case "$OUTPUT" in
-  "${REPO_ROOT}"/*) OUTPUT_REL="${OUTPUT#"${REPO_ROOT}"/}" ;;
+  "${SCRIPT_DIR}"/*) OUTPUT_REL="${OUTPUT#"${SCRIPT_DIR}"/}" ;;
 esac
 
 log "图片已保存: ${OUTPUT}"
@@ -742,7 +722,7 @@ printf '\n✅ 完成：%s\n' "$OUTPUT"
 printf '⏱  总耗时：%s\n' "$(elapsed_text)"
 printf '📦 文件大小：%s bytes\n' "$FILE_SIZE"
 
-# 机器可读结果块（供 skill / 自动化解析；人类也可直接看）
+# 机器可读结果块（供 skill 汇报：耗时 / 大小 / 路径）
 printf '\n---RESULT---\n'
 printf 'status=ok\n'
 printf 'path=%s\n' "$OUTPUT"
@@ -751,5 +731,6 @@ printf 'bytes=%s\n' "$FILE_SIZE"
 printf 'elapsed_seconds=%s\n' "$ELAPSED_SEC"
 printf 'elapsed_text=%s\n' "$(elapsed_text)"
 printf 'model=%s\n' "$MODEL"
+printf 'skill_dir=%s\n' "$SCRIPT_DIR"
 printf '---END_RESULT---\n'
 

@@ -17,6 +17,10 @@ scripts/gen-images/
 scripts/.env
 Response-*.json
 
+# gpt-image-generate skill 本地密钥与产物（与 run.sh 同级）
+.claude/skills/gpt-image-generate/.env
+.claude/skills/gpt-image-generate/gen-images/
+
 # 日志与系统文件
 *.log
 .DS_Store

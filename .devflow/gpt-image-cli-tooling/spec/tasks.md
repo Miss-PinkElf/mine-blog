@@ -54,7 +54,16 @@
 - [ ] 成功出图路径（或脱敏日志证据）
 - [ ] Ctrl+C 中断路径抽检
 
+## T9 · Claude Skill 封装（自包含）
+
+- [x] `.claude/skills/gpt-image-generate/` 完全自包含
+- [x] `run.sh` 与 `.env` / `gen-images` / `prompts` 同级
+- [x] **不**依赖仓库 `scripts/`、不使用 `REPO_ROOT=../../..`
+- [x] 缺 `jq` 时明确提示安装
+- [x] 提示词：用户给出或按意图自动扩写
+- [x] 成功后汇报：耗时、图片大小、图片路径（`---RESULT---`）
+
 ## 当前建议执行顺序
 
-1. 完成 T6 提交
-2. 开新一轮：T7 → T8
+1. T9 skill 已落地
+2. 下一轮：T7 size/ratio/quality → T8 Verify

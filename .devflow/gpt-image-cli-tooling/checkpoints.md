@@ -1,5 +1,14 @@
 # Checkpoints（仅保留最近 3 条）
 
+## 2026-07-15 · T9 Skill 封装完成
+
+- **阶段**：Apply T9
+- **已完成**：
+  - `.claude/skills/gpt-image-generate/SKILL.md` + `scripts/run.sh` + `references/notes.md`
+  - 主脚本增强：缺 jq 中文指引；末尾 `---RESULT---`（path/bytes/elapsed）
+- **未完成**：T7 size/ratio/quality；T8 Verify；skill 改动提交
+- **下一步**：用户确认是否 commit；或继续 T7
+
 ## 2026-07-15 · Mission Init + 脚本 MVP 落盘
 
 - **阶段**：Mission Init / Align 回顾 / Plan 启动；Apply MVP 已在对话中完成
