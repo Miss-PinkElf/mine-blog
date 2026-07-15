@@ -22,6 +22,8 @@ scripts/generate-image.http
 # gpt-image-generate skill 本地密钥与产物（与 run.sh 同级）
 .claude/skills/gpt-image-generate/.env
 .claude/skills/gpt-image-generate/gen-images/
+.codex/skills/gpt-image-generate/.env
+.codex/skills/gpt-image-generate/gen-images/
 
 # 日志与系统文件
 *.log
@@ -38,5 +40,4 @@ Thumbs.db
 **/__pycache__/
 /tmp-docx-feasibility/
 
-# 调试草稿（非站点源码）
-zzz-prompt-debug/
+
