@@ -36,3 +36,9 @@
 - **原因**：`curl --max-time 600`（最长 10 分钟）+ 中转生图慢/挂起
 - **方案**：默认 `CURL_MAX_TIME=180`，可用 `.env` 覆盖
 - **状态**：已调整
+
+## NOTE · 密钥与历史
+
+- 用户核查 key `sk-C2h0…`：**未进入 git 历史**；仅本机 ignore 文件
+- 历史中 `generate-image.http` 曾含另一 key 前缀 `sk-nD7a…`（`f76cec2`/`e84276d`）；文件已 untrack
+- **状态**：已记录；key 轮换由用户侧处理

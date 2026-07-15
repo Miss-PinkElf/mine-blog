@@ -41,11 +41,23 @@
 - **决策（方向）**：官方无独立 ratio-only 参数；用 `size: "宽x高"` 表达比例；`auto` 为当前默认
 - **状态**：待 Spec / Apply
 
-## 2026-07-15 · 封装为 Claude Skill
+## 2026-07-15 · 封装为 Claude Skill（自包含）
 
-- **决策**：在 `.claude/skills/gpt-image-generate/` 提供 skill；底层仍调用 `scripts/generate-image.sh`
+- **决策**：`.claude/skills/gpt-image-generate/` **完全自包含**；`run.sh` 与 `.env`/`gen-images` 同级；**不**依赖仓库 `scripts/generate-image.sh`
 - **要点**：
-  - 缺 `jq` 必须提示用户安装，禁止硬跑
-  - 提示词可由用户给出或由 agent 按意图扩写
-  - 成功后必须汇报耗时、大小、路径（脚本输出 `---RESULT---`）
+  - 缺 `jq` 必须提示安装
+  - 提示词：用户给出或 agent 扩写
+  - 成功汇报：耗时、大小、路径（`---RESULT---`）
+- **状态**：已生效
+
+## 2026-07-15 · 默认模型 gpt-image-2
+
+- **决策**：`MODEL="${OPENAI_MODEL:-gpt-image-2}"`（skill + 仓库脚本一致）
+- **原因**：与用户 REST Client / 中转习惯一致；比默认 gpt-5.4 调度路径更直观
+- **状态**：已生效
+
+## 2026-07-15 · generate-image.http 仅本机
+
+- **决策**：从 git 取消跟踪并 ignore；本地文件保留
+- **原因**：易含 API Key；用户已禁用相关 key
 - **状态**：已生效

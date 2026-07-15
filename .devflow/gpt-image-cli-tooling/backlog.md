@@ -1,6 +1,6 @@
 # Backlog
 
-- 异步生图 task 轮询（若中转提供）
-- 保存无 base64 的 response meta.json 旁路文件
+- 保存无 base64 的 response meta.json（旁路，便于排查）
 - 多提示词批量出图
-- 将脚本能力封装为 npm script 或 make target
+- npm script / make 快捷入口
+- skill 与仓库 `scripts/generate-image.sh` 是否长期双轨或只保留 skill（待定）

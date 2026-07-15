@@ -29,9 +29,8 @@
 
 ## T5 · 调试资产
 
-- [x] `generate-image.http`
-- [x] bug-log 记录 524 / 慢解析 / 中断问题
-
+- [x] `generate-image.http`（**仅本机**；已 untrack + gitignore，勿再提交）
+- [x] bug-log 记录 524 / 慢解析 / 中断 / spinner 卡死
 ## T6 · 过程治理（重型）
 
 - [x] Mission Init（workflow/state/origin/decision）
@@ -62,8 +61,16 @@
 - [x] 缺 `jq` 时明确提示安装
 - [x] 提示词：用户给出或按意图自动扩写
 - [x] 成功后汇报：耗时、图片大小、图片路径（`---RESULT---`）
+- [x] 默认 model=`gpt-image-2`；Ctrl+C force kill；`CURL_MAX_TIME` 默认 180
+
+## T10 · 本会话收尾
+
+- [x] 更新 state/workflow/checkpoint/handoff/deferred
+- [x] NEXT-SESSION-PROMPT
+- [x] 提交收尾文档（不含 gitignore/config/tsconfig 的额外要求已遵守）
 
 ## 当前建议执行顺序
 
-1. T9 skill 已落地
-2. 下一轮：T7 size/ratio/quality → T8 Verify
+1. **下轮优先 T7** size/ratio/quality（skill `run.sh` 为主）
+2. 再 T8 Verify
+3. 延期项见 `deferred/`，勿在本 mission 偷做 Web UI

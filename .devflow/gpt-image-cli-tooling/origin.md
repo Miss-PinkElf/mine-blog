@@ -20,8 +20,13 @@
 | 10 | 对话：解析慢、Ctrl+C 停不掉 | 2026-07-15 | 性能与信号处理 | 已吸收（流式解码 + 中断退出） |
 | 11 | 对话：图片 size 如何定、能否只控比例 | 2026-07-15 | 后续能力 | 待 Spec 任务 |
 | 12 | 对话：提交 + 启用 devflow 重型流程 | 2026-07-15 | 过程治理 | 本 mission 启动 |
+| 13 | 对话：skill 自包含，env 与 run.sh 同级 | 2026-07-15 | Skill 边界 | 已吸收 |
+| 14 | 对话：默认 model 改为 gpt-image-2 | 2026-07-15 | 默认值 | 已吸收 |
+| 15 | 对话：收尾 / 新开对话 / 记录延期 | 2026-07-15 | Close+Handoff | 本轮 |
+| 16 | 本地：`scripts/generate-image.http`（含 key 调试） | 2026-07-15 | 仅本机 | 已 untrack，勿提交 |
 
 ## 备注
 
-- API Key 仅存在本机 `scripts/.env`，禁止提交。
+- API Key 仅本机 `.env` / 可选本地 `.http`，禁止提交。
+- Skill：`.claude/skills/gpt-image-generate/.env`
 - 大体积 `Response-*.json` 与 `gen-images/` 已 gitignore。
