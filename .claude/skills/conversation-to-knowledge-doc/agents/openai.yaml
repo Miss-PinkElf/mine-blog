@@ -1,0 +1,4 @@
+interface:
+  display_name: "对话转知识文档"
+  short_description: "把当前对话和引用文件整理为结构化知识文档和可复用文章素材"
+  default_prompt: "Use $conversation-to-knowledge-doc to turn this conversation into a knowledge document."

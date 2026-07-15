@@ -1,0 +1,12 @@
+{
+  "name": "devflow-cli-worker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "devflow-worker": "./bin/devflow-worker.mjs"
+  },
+  "scripts": {
+    "test": "node src/session-store.test.mjs && node src/tmux-driver.test.mjs && node src/macos-terminal.test.mjs && node src/wait-agent.test.mjs && node src/vscode-bridge.test.mjs && node src/cli.test.mjs"
+  }
+}
