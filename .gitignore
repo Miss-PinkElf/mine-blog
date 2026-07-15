@@ -11,6 +11,12 @@ dist/
 .env.*
 !.env.example
 
+# 本地 API 调试产物（图片 / 响应 JSON）
+scripts/output/
+scripts/gen-images/
+scripts/.env
+Response-*.json
+
 # 日志与系统文件
 *.log
 .DS_Store
