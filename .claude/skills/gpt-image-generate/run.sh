@@ -30,6 +30,7 @@ DEFAULT_PROMPT_FILE="${SCRIPT_DIR}/prompts/prompt-image.md"
 MAX_RETRIES=5
 # 重试基础等待秒数（第 n 次重试等待 n * RETRY_BASE_SLEEP 秒，上限 30 秒）
 RETRY_BASE_SLEEP=5
+# 单次 curl 超时在 load_env 之后再套默认（见下方），避免 .env 被抢先写死
 
 # 全程计时（bash 内置秒表）
 SECONDS=0
@@ -79,39 +80,60 @@ is_interrupt_exit() {
   [[ "$code" -eq 130 || "$code" -eq 143 || "$code" -eq 129 || "$code" -eq 131 ]]
 }
 
+# 强制结束子进程：TERM → 短暂等待 → KILL，避免 wait 永久挂死
+# （旧版 spinner 忽略了 TERM，会导致 Ctrl+C 后卡在 wait 上）
+force_kill_pid() {
+  local pid="${1:-}"
+  [[ -z "$pid" ]] && return 0
+  kill -TERM "$pid" 2>/dev/null || true
+  local i=0
+  while kill -0 "$pid" 2>/dev/null && [[ "$i" -lt 5 ]]; do
+    # 0.1s * 5 = 最多约 0.5s
+    sleep 0.1 2>/dev/null || sleep 1
+    i=$((i + 1))
+  done
+  if kill -0 "$pid" 2>/dev/null; then
+    kill -KILL "$pid" 2>/dev/null || true
+  fi
+  wait "$pid" 2>/dev/null || true
+}
+
 stop_loading() {
   local step_cost=0
   if [[ "${LOADING_STEP_START:-0}" -gt 0 ]]; then
     step_cost=$(( $(date +%s) - LOADING_STEP_START ))
   fi
   if [[ -n "${LOADING_PID}" ]]; then
-    kill "$LOADING_PID" 2>/dev/null || true
-    # 杀掉 spinner 的子进程（sleep 等）
-    kill -- -"$LOADING_PID" 2>/dev/null || true
-    wait "$LOADING_PID" 2>/dev/null || true
+    force_kill_pid "$LOADING_PID"
   fi
   LOADING_PID=""
   LOADING_STEP_START=0
-  # 清掉 loading 行
+  # 清掉 loading 行 + 换行，避免残影盖住后续日志
   printf '\r%*s\r' 100 '' 2>/dev/null || true
   LAST_STEP_COST="$step_cost"
 }
 
 kill_curl_if_running() {
   if [[ -n "${CURL_PID}" ]]; then
-    kill "$CURL_PID" 2>/dev/null || true
-    wait "$CURL_PID" 2>/dev/null || true
+    force_kill_pid "$CURL_PID"
     CURL_PID=""
   fi
 }
 
-# Ctrl+C / kill 时立刻退出，绝不进入重试
+# Ctrl+C / kill 时立刻退出，绝不进入重试、绝不卡在 wait
 on_interrupt() {
+  # 防止重复进入
+  if [[ "$INTERRUPTED" -eq 1 ]]; then
+    kill -KILL "$$" 2>/dev/null || exit 130
+  fi
   INTERRUPTED=1
   printf '\n' >&2
-  log "收到中断信号（Ctrl+C），正在停止..."
-  stop_loading >/dev/null 2>&1 || true
+  log "收到中断信号（Ctrl+C），正在强制停止子进程..."
+  # 先杀 curl 再杀 spinner，避免继续占连接
   kill_curl_if_running
+  stop_loading >/dev/null 2>&1 || true
+  printf '\r%*s\r' 100 '' 2>/dev/null || true
+  echo "[中断] 已退出（不重试）" >&2
   # 临时文件由 EXIT trap 清理
   exit 130
 }
@@ -120,8 +142,8 @@ start_loading() {
   LOADING_MSG="${1:-处理中}"
   LOADING_STEP_START="$(date +%s)"
   (
-    # 子进程里忽略多余噪音；父进程负责真正退出
-    trap '' INT TERM
+    # 仅忽略 INT，避免和父进程抢信号；必须能响应 TERM/KILL（否则 Ctrl+C 会卡死）
+    trap '' INT
     local frames=('|' '/' '-' '\')
     local i=0
     local step_used=0
@@ -138,7 +160,6 @@ start_loading() {
     done
   ) &
   LOADING_PID=$!
-  # 注意：不要在这里覆盖 EXIT/INT trap，统一由主流程注册
 }
 
 # 可被 Ctrl+C 打断的 sleep（避免重试等待时按中断没反应）
@@ -357,7 +378,7 @@ usage() {
 
 选项:
   -o, --output PATH        自定义输出图片路径（默认写入同级 gen-images/）
-  -m, --model NAME         Responses 主模型（默认: gpt-5.4）
+  -m, --model NAME         Responses 主模型（默认: gpt-image-2）
   --base-url URL           API Base URL（默认: https://shell.wyzlab.ai/v1）
   -p, --prompt-file PATH   指定提示词文件（默认: prompts/prompt-image.md）
   --retries N              最多重试次数（默认 5，不含首次）
@@ -387,8 +408,11 @@ EOF
 load_env_file "$ENV_FILE"
 
 BASE_URL="${OPENAI_BASE_URL:-https://shell.wyzlab.ai/v1}"
-MODEL="${OPENAI_MODEL:-gpt-5.4}"
+MODEL="${OPENAI_MODEL:-gpt-image-2}"
 API_KEY="${OPENAI_API_KEY:-}"
+# 读完 .env 后再给超时默认值
+CURL_CONNECT_TIMEOUT="${CURL_CONNECT_TIMEOUT:-20}"
+CURL_MAX_TIME="${CURL_MAX_TIME:-180}"
 OUTPUT=""
 RAW_ONLY=0
 AUTO_OPEN=1
@@ -572,21 +596,26 @@ for ((attempt=1; attempt<=TOTAL_ATTEMPTS; attempt++)); do
   : > "$JSON_PATH"
   : > "$HTTP_CODE_FILE"
 
-  start_loading "等待服务端生成图片（第 ${attempt}/${TOTAL_ATTEMPTS} 次）"
+  start_loading "等待服务端生成图片（第 ${attempt}/${TOTAL_ATTEMPTS} 次，单次最长 ${CURL_MAX_TIME}s）"
+  log "curl 超时: connect=${CURL_CONNECT_TIMEOUT}s, max-time=${CURL_MAX_TIME}s（可用 .env 的 CURL_MAX_TIME 调整）"
   set +e
-  # curl 放到后台，便于 Ctrl+C 时精确杀掉，避免「中断后被当成失败继续重试」
+  # curl 放到后台，便于 Ctrl+C 时强制杀掉
   curl -sS -o "$JSON_PATH" -w "%{http_code}" \
-    --connect-timeout 30 \
-    --max-time 600 \
+    --connect-timeout "${CURL_CONNECT_TIMEOUT}" \
+    --max-time "${CURL_MAX_TIME}" \
     -X POST "${BASE_URL}/responses" \
     -H "Authorization: Bearer ${API_KEY}" \
     -H "Content-Type: application/json" \
     -d "$REQUEST_BODY" \
     >"$HTTP_CODE_FILE" &
   CURL_PID=$!
+  # wait 被信号打断时可能返回 >128；随后 on_interrupt 会 exit
   wait "$CURL_PID"
   CURL_EXIT=$?
-  CURL_PID=""
+  # 若中断处理已在跑，CURL_PID 可能已被清空
+  if [[ -n "${CURL_PID}" ]]; then
+    CURL_PID=""
+  fi
   set -e
   stop_loading
 

@@ -133,7 +133,7 @@ bash .claude/skills/gpt-image-generate/run.sh --no-open "最终提示词"
 ```bash
 OPENAI_API_KEY=...
 OPENAI_BASE_URL=https://shell.wyzlab.ai/v1
-OPENAI_MODEL=gpt-5.4
+OPENAI_MODEL=gpt-image-2
 ```
 
 优先级：CLI 参数 > 环境变量 > 同级 `.env` > 脚本默认值。

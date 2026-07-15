@@ -16,6 +16,8 @@ scripts/output/
 scripts/gen-images/
 scripts/.env
 Response-*.json
+# 本地 REST Client 调试（常含 key，仅本机保留）
+scripts/generate-image.http
 
 # gpt-image-generate skill 本地密钥与产物（与 run.sh 同级）
 .claude/skills/gpt-image-generate/.env
