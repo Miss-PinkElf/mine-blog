@@ -2,18 +2,18 @@
 
 ## 角色锚点
 
-- 名称：无限凛 / URO
-- 发：黑 + 荧光绿
-- 眼：异色瞳，绿瞳 ∞
-- 装：JK 魔改；私服黑卫衣 + 一黑一绿袜 + 耳机
-- 气质：三无主、傲娇/傻萌次
+- 黑发 + 荧光绿；异色瞳（绿瞳 ∞）；三无主气质
+- JK 魔改；私服黑卫衣 + 一黑一绿袜 + 耳机
 
-## 产出
+## 第一版产物布局（cat-oc-design 映射）
 
-- `generated/rin-01-global-design.png`：多 panel 设定板（浅灰底）
+| cat-oc-design 类型 | 本仓库产物 |
+| --- | --- |
+| 全局 | rin-01-global-design |
+| 角度和表情 | rin-02-angles-expressions |
+| 动作 | rin-03-actions |
+| 场景 | rin-04-jk-server-room（+ 延期 rin-05 宅家） |
 
 ## 工具
 
-- `.codex/skills/gpt-image-generate/run.sh`
-- 模式：有参考图 `action=edit`；无参考 `generate`
-- 模型：`gpt-image-2`
+- skill `gpt-image-generate`，模型 `gpt-image-2`，中转 `shell.wyzlab.ai`
