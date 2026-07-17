@@ -37,3 +37,12 @@
 4. **`has` 阈值**：不能用过大的 base64 长度门槛；极小 PNG 合法 base64 可 <100。
 5. **大参考图可行**：约 1.9MB OC 立绘 data URL（请求体约 2.5MB）+ Chat 图生图实测约 75s 成功；body 仍必须 `@file`。
 6. **T7 不可照搬旧 design**：Chat 无 `tools[0].size` 写入点；下轮 size/ratio 需重新设计（提示词约定 / 网关扩展字段 / 或另开 images API）。
+
+## 2026-07-18
+
+1. **跨平台主路径用 Python，Node 作完整兜底**；skill 不内嵌解释器；Win 用 `run.cmd` / `python run.py`。
+2. **输入压缩 ≠ 固定长边**：默认编码压体积（JPEG quality）；缩边仅 heavy 兜底或显式 `--max-edge`；**输出不管**。
+3. **双图协议可用**：`content` 多 `image_url`；模型会认张数；`run.py` 可落盘。失败多为断连，不是 4xx。
+4. **请求 model 与响应 model 可能不一致**：请求 `gpt-image-2`，响应常 `gpt-5.4`（中转改写）。
+5. **多图 body 建议压到约 100KB 量级更稳**；medium 双图 ~377KB 易 60s 断连；heavy 后 ~100KB 可成功。
+6. **Node 压缩可复用 Python image_prep**（子进程），避免双份图像算法分叉。

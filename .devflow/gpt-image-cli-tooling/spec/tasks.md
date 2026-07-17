@@ -107,8 +107,19 @@
 - [x] 实测：文生图、图生图、OC 大参考图
 - [x] mission 文档 + handoff 收尾
 
-## 当前建议执行顺序（2026-07-17 更新）
+## T17 · Python 主入口 + Node 兜底 + 多图 + 输入压缩（2026-07-18）
 
-1. **本轮 T16：已完成**（Chat 协议 + 实测 + 收尾）
+- [x] `run.py` 全流程（.env / CLI / 重试 / RESULT / 跨平台打开图）
+- [x] `lib/image_prep.py`：`--prep` 档位，默认不固定长边
+- [x] `run.mjs` 兜底（CLI 对齐；压缩可调 py image_prep）
+- [x] `run.cmd` / `run` 启动器；`run.sh` 薄封装
+- [x] 多图：可重复 `-i`；codec build 多 image_url
+- [x] SKILL / notes / .env.example；同步 `.codex`
+- [x] 实测：文生图、单图图生图、双图落盘 `rin-dual-test-01.png`
+- [x] mission 文档 + handoff 收尾（本轮）
+
+## 当前建议执行顺序（2026-07-18 更新）
+
+1. **本轮 T17：已完成**（跨平台 + 多图 + prep + 收尾）
 2. 后续：T7 size/ratio/quality（Chat 适配第一版）→ T8 完整 Verify
-3. 可选 backlog：仓库 scripts 迁 Chat / 废弃双轨
+3. 可选 backlog：体积探针笔记、多图默认 heavy 文档、scripts 双轨

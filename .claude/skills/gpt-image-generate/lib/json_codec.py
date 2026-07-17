@@ -44,25 +44,28 @@ def cmd_build(args: argparse.Namespace) -> int:
     model = args.model
     prompt = args.prompt
     out = Path(args.out)
-    if args.image:
-        raw = Path(args.image).read_bytes()
-        b64 = base64.b64encode(raw).decode("ascii")
-        mime = args.mime or mime_for(args.image)
+    # 支持多次 --image（argparse append）；兼容旧 --mime 单图
+    images: list = list(getattr(args, "images", None) or [])
+
+    if images:
+        content: list = [{"type": "text", "text": prompt}]
+        for idx, img_path in enumerate(images):
+            raw = Path(img_path).read_bytes()
+            b64 = base64.b64encode(raw).decode("ascii")
+            if len(images) == 1 and args.mime:
+                mime = args.mime
+            else:
+                mime = mime_for(img_path)
+            content.append(
+                {
+                    "type": "image_url",
+                    "image_url": {"url": f"data:{mime};base64,{b64}"},
+                }
+            )
         body = {
             "model": model,
             "stream": False,
-            "messages": [
-                {
-                    "role": "user",
-                    "content": [
-                        {"type": "text", "text": prompt},
-                        {
-                            "type": "image_url",
-                            "image_url": {"url": f"data:{mime};base64,{b64}"},
-                        },
-                    ],
-                }
-            ],
+            "messages": [{"role": "user", "content": content}],
         }
     else:
         body = {
@@ -313,8 +316,8 @@ def main() -> int:
     b.add_argument("--model", required=True)
     b.add_argument("--prompt", required=True)
     b.add_argument("--out", required=True)
-    b.add_argument("--image")
-    b.add_argument("--mime")
+    b.add_argument("--image", action="append", dest="images", help="参考图（可重复）")
+    b.add_argument("--mime", help="单图时可选覆盖 mime")
     b.set_defaults(func=cmd_build)
 
     e = sub.add_parser("extract")

@@ -1,5 +1,9 @@
 # Checkpoints Archive
 
+## 归档 · 2026-07-18
+
+- 2026-07-16 · Apply T11–T15 图文同传 + JSON 回退（已从 checkpoints 轮换）
+
 ## 2026-07-15 · 中断与性能修复（已归档）
 
 - **阶段**：Apply 热修

@@ -204,6 +204,17 @@ function downloadToBuffer(url) {
   });
 }
 
+function collectImages(argv) {
+  const images = [];
+  for (let i = 0; i < argv.length; i++) {
+    if (argv[i] === "--image" || argv[i] === "-i") {
+      const p = argv[i + 1];
+      if (p) images.push(p);
+    }
+  }
+  return images;
+}
+
 function build(argv) {
   const get = (k) => {
     const i = argv.indexOf(k);
@@ -212,26 +223,27 @@ function build(argv) {
   const model = get("--model");
   const prompt = get("--prompt");
   const out = get("--out");
-  const image = get("--image");
-  const mime = get("--mime") || (image ? mimeFor(image) : "image/png");
+  const images = collectImages(argv);
+  const mimeOverride = get("--mime");
   let body;
-  if (image) {
-    const b64 = fs.readFileSync(image).toString("base64");
+  if (images.length > 0) {
+    const content = [{ type: "text", text: prompt }];
+    for (let idx = 0; idx < images.length; idx++) {
+      const image = images[idx];
+      const mime =
+        images.length === 1 && mimeOverride
+          ? mimeOverride
+          : mimeFor(image);
+      const b64 = fs.readFileSync(image).toString("base64");
+      content.push({
+        type: "image_url",
+        image_url: { url: `data:${mime};base64,${b64}` },
+      });
+    }
     body = {
       model,
       stream: false,
-      messages: [
-        {
-          role: "user",
-          content: [
-            { type: "text", text: prompt },
-            {
-              type: "image_url",
-              image_url: { url: `data:${mime};base64,${b64}` },
-            },
-          ],
-        },
-      ],
+      messages: [{ role: "user", content }],
     };
   } else {
     body = {

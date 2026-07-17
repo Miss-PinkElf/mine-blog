@@ -56,3 +56,13 @@
 - **原因**：阈值 `len > 100` 过严
 - **方案**：`has` 对 b64 改为 `len >= 32`（python/node codec）
 - **状态**：已修复（2026-07-17）；真实大图/URL 路径本不受影响
+
+## BUG-008 · 中转 `Remote end closed connection without response`
+
+- **现象**：`urllib`/`run.py` 请求约 60s 后对端关连接，无 HTTP 状态码与响应体；文生图/单图/双图均可偶发；大 body 双图更易触发
+- **原因**：中转/网关不稳定或中间超时，**不是** skill 把多图 JSON 字段写错（同结构小 body 双图可 200）
+- **方案**：
+  1. 重试（已有）
+  2. 多图/大参考图用 `--prep heavy` 降低 `request_body_bytes`
+  3. 勿将断连误判为「不支持双图」
+- **状态**：已缓解（重试 + 输入压缩）；根因在中转侧

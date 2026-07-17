@@ -1,22 +1,25 @@
 # State · gpt-image-cli-tooling
 
-- **阶段**：Close / Handoff（本会话收尾，2026-07-17）
+- **阶段**：Close / Handoff（2026-07-18 · 第四版跨平台脚本）
 - **路径**：Heavy
-- **本轮已交付（第三版 · Chat 协议）**：
-  - Skill 主路径从 **Responses** 切换为 **Chat Completions**：`POST {BASE}/chat/completions`
-  - 文生图：`messages: [{role:user, content: 提示词}]`
-  - 图生图：`content: [text, image_url(data URL)]`（不再使用 `tools.image_generation` / `action=edit|generate`）
-  - 响应解析：`choices[0].message.content` 的 Markdown URL / data URL；URL 走 curl 下载
-  - 修复 macOS `printf ---RESULT---` 被当成选项导致 exit≠0
-  - 修复 `has` 对短 base64（1×1 PNG≈96 字符）阈值过严（`>100` → `>=32`）
-  - 双目录已同步：`.claude/...` 真相源 → `.codex/...`
-- **Verify（本轮实测）**：
-  - 文生图：HTTP 200，~20s，exit 0
-  - 图生图（小图）：HTTP 200，~28s
-  - 图生图（真实 OC 参考图 `zzz-prompt-debug/origin/OC/generated/rin-01-global-design.png`，约 1.9MB）：HTTP 200，~75s，产出约 2.06MB / 1536×1024
-- **第一/二版保留**：重试、中断、流式解码、RESULT、默认 `gpt-image-2`、jq/node/python 回退
-- **下轮优先**：T7 size/ratio/quality（**需按 Chat 协议重设计写入方式**，勿照搬旧 tools 字段）；T8 失败路径抽检
-- **明确延期**：异步 task、站点 UI、纯 aspect_ratio 官方字段；仓库 `scripts/generate-image.sh` 仍为旧 Responses（双轨是否废弃见 backlog）
+- **本轮已交付（第四版）**：
+  - 主入口 **Python `run.py`**；Node **`run.mjs` 完整兜底**；`run.cmd` / `run` 启动器；`run.sh` 薄封装
+  - 多参考图：可重复 `-i/--image`（上限 4）
+  - 输入压缩：`--prep off|light|medium|heavy`（质量优先编码，**默认不固定长边**）；Pillow 可选
+  - 去 jq 主依赖；**输出 png 不做体积治理**（第一版明确不做）
+  - Plan：`plans/2026-07-18-python-node-cross-platform-plan.md`
+  - 双目录同步：`.claude/skills/gpt-image-generate/` → `.codex/...`
+- **Verify（2026-07-18）**：
+  - prep：大 PNG medium 压体积且默认不缩边
+  - 文生图 / 单图图生图 HTTP 200
+  - **双图实测成功并落盘**：`zzz-prompt-debug/origin/OC/generated/rin-dual-test-01.png`（人设+风格，`--prep heavy`，body~101KB；前两次断连、第三次 200）
+  - 中转响应 `model` 常显示 `gpt-5.4`（请求仍写 `gpt-image-2`）
+  - 偶发 `Remote end closed connection without response`（~60s），重试可恢复；**非**双图协议 4xx
+- **下轮优先（未延期）**：
+  - T7 size/ratio/quality（Chat 适配第一版即可）
+  - T8 失败路径抽检
+  - 可选：notes 体积探针表、多图默认 heavy 策略写进 SKILL
+- **明确延期 / 第一版不做**：见 `deferred/` 与 backlog；内嵌 Python 运行时、输出体积治理、自动下载解释器
 - **阻塞**：无
-- **最新 handoff**：`handoffs/2026-07-17-001-chat-protocol-session-close.md`
+- **最新 handoff**：`handoffs/2026-07-18-001-python-node-cross-platform-close.md`
 - **下次入口**：`NEXT-SESSION-PROMPT-gpt-image-cli-tooling.md`

@@ -1,5 +1,22 @@
 # Decision Log · 决策记录
 
+## 2026-07-18 · Python 主入口 + Node 完整兜底（跨平台）
+
+- **决策**：
+  1. 主实现 `run.py`；Node `run.mjs` 能力对齐作兜底；不内嵌 Python 发行版
+  2. 多图：可重复 `-i/--image`，Chat `content` 多个 `image_url`
+  3. 输入压缩：`--prep` 档位 + 精细参数；**质量优先编码，默认不固定长边**；输出体积不做
+  4. `run.sh` 降级为转调 py/node 的薄封装
+- **原因**：Win 上 bash 难跑；大图 body 超时；用户环境 py/node 至少一个；双图需可调压缩
+- **状态**：已生效（skill 双目录 + 双图实测落盘）
+
+## 2026-07-18 · 双图可用性结论（中转实测）
+
+- **决策/结论**：当前中转 **支持** 多 `image_url`；失败形态多为断连而非 4xx
+- **证据**：小 body 探针 200 + 模型回复「2 images」；`run.py` 双图重试后 200 并保存 `rin-dual-test-01.png`
+- **注意**：响应 `model` 常为 `gpt-5.4`，请求仍写 `gpt-image-2`（网关改写）
+- **状态**：已记录；多图建议 `--prep heavy` 控 body
+
 ## 2026-07-15 · 启用独立 mission + 重型路径
 
 - **决策**：新建 mission `gpt-image-cli-tooling`，走 devflow 重型路径

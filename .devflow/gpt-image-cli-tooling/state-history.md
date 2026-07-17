@@ -69,3 +69,14 @@
 - **阻塞**：无
 - **最新 handoff**：`handoffs/2026-07-16-001-image-text-session-close.md`
 - **下次入口**：`NEXT-SESSION-PROMPT-gpt-image-cli-tooling.md`
+
+## 快照 · 2026-07-18 · 第四版 Apply 前（Chat 协议收尾态）
+
+# State · gpt-image-cli-tooling
+
+- **阶段**：Close / Handoff（本会话收尾，2026-07-17）
+- **路径**：Heavy
+- **本轮已交付（第三版 · Chat 协议）**：Skill 主路径 Chat Completions；文生图/图生图；双目录同步
+- **下轮优先**：T7 size/ratio/quality；T8 失败路径
+- **最新 handoff**：handoffs/2026-07-17-001-chat-protocol-session-close.md
+

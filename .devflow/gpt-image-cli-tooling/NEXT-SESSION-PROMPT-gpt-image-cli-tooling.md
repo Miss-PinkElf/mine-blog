@@ -10,8 +10,8 @@
 
 1. `.devflow/gpt-image-cli-tooling/state.md`
 2. `.devflow/gpt-image-cli-tooling/checkpoints.md`
-3. 需要交接细节：`.devflow/gpt-image-cli-tooling/handoffs/2026-07-17-001-chat-protocol-session-close.md`
-4. 实施前：`.devflow/gpt-image-cli-tooling/spec/tasks.md` + `spec/design.md`
+3. 交接：`.devflow/gpt-image-cli-tooling/handoffs/2026-07-18-001-python-node-cross-platform-close.md`
+4. 实施前：`spec/tasks.md`（T7/T8）+ 需要时 `spec/design.md`
 
 完整过程再读 `development-overview.md`；延期见 `deferred/` 与 `backlog.md`。
 
@@ -19,43 +19,48 @@
 
 ### 已完成
 
-- **第一版**：自包含文生图 skill（重试、中断、RESULT、默认 `gpt-image-2`）
-- **第二版（2026-07-16）**：`--image` 图文同传；jq/node/python JSON 回退；双目录同步
-- **第三版（2026-07-17）**：
-  - 主协议改为 **Chat Completions**（`POST /v1/chat/completions`）
-  - **不再**使用 `/responses` + `image_generation`
-  - 响应：Markdown 图片 URL 下载 / data URL 解码
-  - 实测：文生图、图生图、OC 大图 `zzz-prompt-debug/origin/OC/generated/rin-01-global-design.png` 成功
+- 第一～三版：文生图、图文、Chat Completions、双目录
+- **第四版（2026-07-18）**：
+  - 主入口 **`run.py`**，兜底 **`run.mjs`**，`run.cmd` / `run`
+  - 多图 `-i`（可重复）、输入 `--prep`（默认不固定长边）
+  - **双图实测成功**：`zzz-prompt-debug/origin/OC/generated/rin-dual-test-01.png`
+  - 断连靠重试 + 压 body；**不是**协议不支持双图
 
 ### 未完成（下轮优先，非延期）
 
-#### T7 · 尺寸 / 比例 / 质量（优先 · 第一版即可）
+#### T7 · 尺寸 / 比例 / 质量（第一版即可）
 
-- CLI / env：`--size`、`--quality`、`--ratio`
+- CLI/env：`--size`、`--quality`、`--ratio`
 - **必须按 Chat 协议设计**，不要写 Responses `tools[0]`
-- 建议先讨论：提示词前缀 vs 网关扩展字段，再落 plan/apply
-- 验证至少 1:1 与 2:3 各一次
+- 先讨论再 plan/apply；至少验证 1:1 与 2:3
 
 #### T8 · Verify 补强
 
-- 无 key、空 prompt、成功出图、Ctrl+C 抽检并留证据
+- 无 key、空 prompt、成功出图、Ctrl+C 抽检
+
+### 可选
+
+- notes 体积/断连对照表
+- 多图默认建议 heavy 写进 SKILL 更醒目
 
 ### 明确延期（不要本轮偷做）
 
-- 异步 task 轮询 → `deferred/async-image-jobs.md`
-- 站点内嵌生图 UI → `deferred/web-ui-image-gen.md`
-- 「只有官方 aspect_ratio、不要 size」→ `deferred/aspect-ratio-only.md`
-- 仓库 `scripts/generate-image.sh` 迁 Chat / 废弃双轨 → backlog（可选，非 T7 阻塞）
+- 异步 task → `deferred/async-image-jobs.md`
+- 站点 UI → `deferred/web-ui-image-gen.md`
+- 仅 aspect_ratio → `deferred/aspect-ratio-only.md`
+- **内嵌运行时 / 输出体积治理** → `deferred/no-bundled-runtime-and-output-size.md`
+- 仓库 scripts 迁 Chat / 废弃双轨 → backlog
 
 ## 注意
 
-- 始终简体中文；路径用相对路径
-- 不要提交 `.env`、key、`gen-images/`
+- 始终简体中文；相对路径
+- 不要提交 `.env`、key、skill 内 `gen-images/`
 - 改 skill 后同步 **`.claude` → `.codex`**
-- 硬门禁：有 plan/tasks 再改代码（用户另有要求除外）
-- 大 base64 禁止进 bash 变量；图文 body 用临时文件 + curl `@file`
-- macOS：`printf '%s\n' '---RESULT---'`，勿 `printf '---...'`
+- 多图/大参考图：优先 `--prep heavy` 控 body
+- 响应 `model` 可能是 `gpt-5.4`，请求仍可写 `gpt-image-2`
+- 默认：`python .claude/skills/gpt-image-generate/run.py ...`
 
 ## 建议第一步
 
-打开 `spec/design.md` 中「尺寸与比例设计（T7）」一节，先定 Chat 下 size/ratio 写入策略，再写 plan 并 Apply。
+若做 T7：先对齐 Chat 下 size/ratio 写入策略（提示词 vs 扩展字段），再写 plan 后 Apply。  
+若只验证稳定性：补 T8 失败路径证据即可。

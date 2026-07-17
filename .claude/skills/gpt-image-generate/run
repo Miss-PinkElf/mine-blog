@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 兼容旧入口：转调 Python 主实现；无 Python 时尝试 Node
+# 薄启动器：优先 Python，否则 Node
 set -euo pipefail
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
@@ -10,6 +10,8 @@ elif command -v python >/dev/null 2>&1; then
 elif command -v node >/dev/null 2>&1; then
   exec node "$DIR/run.mjs" "$@"
 else
-  echo "错误: 需要 Python 3 或 Node.js（run.sh 已降级为薄封装）" >&2
+  echo "错误: 需要 Python 3 或 Node.js" >&2
+  echo "  macOS: brew install python  或  brew install node" >&2
+  echo "  Windows: winget install Python.Python.3.12" >&2
   exit 127
 fi

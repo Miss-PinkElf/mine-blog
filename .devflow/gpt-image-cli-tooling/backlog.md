@@ -8,3 +8,7 @@
 - Windows 上 `jq` 安装说明是否写入用户本机文档（可选；skill 已有分平台提示）
 - 图文请求默认 `CURL_MAX_TIME` 是否再调大（大图编辑更慢时；OC 1.9MB 约 75s 尚可）
 - Chat 协议下 size/quality 是否走网关非标准字段 vs 只写进提示词（并入 T7 讨论）
+- 多图时 SKILL 默认建议 `--prep heavy`（策略文档，非硬编码）
+- `references/notes.md` 补体积/断连探针对照表（Task9 可选）
+- Node 侧纯 JS 图像压缩（当前依赖调用 Python+Pillow；无 py 时 prep 能力弱）
+- medium 压缩对已很小的 JPEG 可能「越压越大」——可加「仅当变小才替换」优化
