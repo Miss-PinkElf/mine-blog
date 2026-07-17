@@ -1,5 +1,11 @@
 # State History
 
+## 2026-07-17 · Gallery 真图 Apply 中（归档）
+
+- **阶段**：Apply（内容：Gallery 真图 + Profile 立绘）
+- **已完成**：4 张 OC 入 `public/gallery/`；Gallery + Profile 接入
+- **说明**：收尾前快照，滚动至 Close/Handoff 新 `state.md`
+
 ## 2026-07-17 · 壳迁移 Apply 完成待提交（归档）
 
 - **阶段**：Apply 完成（壳迁移）/ 待目视

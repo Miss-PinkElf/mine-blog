@@ -781,21 +781,22 @@ body.shell-menu-open {
   transform: scale(var(--scale-press));
 }
 
-/* —— 画廊：裁切盒内 zoom（对齐 gallery img scale 1.04） —— */
+/* —— 画廊：真图网格 + 主视觉通栏 + 盒内 zoom —— */
 .shell-gallery {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 0.85rem;
 }
 
 .shell-gallery__item {
-  aspect-ratio: 1;
+  margin: 0;
+  aspect-ratio: 4 / 3;
   border-radius: 1rem;
   border: 1px solid var(--color-border);
   overflow: hidden;
   position: relative;
   background: var(--color-surface);
-  cursor: pointer;
+  cursor: default;
   transition:
     border-color 0.15s ease,
     transform var(--dur-pop) var(--ease-pop),
@@ -803,32 +804,23 @@ body.shell-menu-open {
   animation: shell-reveal-up 0.8s var(--ease-reveal) both;
 }
 
+/* 机房主视觉通栏：竖图，框略高以免裁掉头 */
+.shell-gallery__item--featured {
+  grid-column: 1 / -1;
+  aspect-ratio: 4 / 3;
+}
+
 .shell-gallery__item:nth-child(1) {
   animation-delay: 0.08s;
 }
 .shell-gallery__item:nth-child(2) {
-  animation-delay: 0.12s;
+  animation-delay: 0.14s;
 }
 .shell-gallery__item:nth-child(3) {
-  animation-delay: 0.16s;
-}
-.shell-gallery__item:nth-child(4) {
   animation-delay: 0.2s;
 }
-.shell-gallery__item:nth-child(5) {
-  animation-delay: 0.24s;
-}
-.shell-gallery__item:nth-child(6) {
-  animation-delay: 0.28s;
-}
-.shell-gallery__item:nth-child(7) {
-  animation-delay: 0.32s;
-}
-.shell-gallery__item:nth-child(8) {
-  animation-delay: 0.36s;
-}
-.shell-gallery__item:nth-child(9) {
-  animation-delay: 0.4s;
+.shell-gallery__item:nth-child(4) {
+  animation-delay: 0.26s;
 }
 
 .shell-gallery__item:hover {
@@ -840,21 +832,142 @@ body.shell-menu-open {
   transform: scale(var(--scale-press));
 }
 
-.shell-gallery__swatch {
+.shell-gallery__img {
+  display: block;
   width: 100%;
   height: 100%;
-  display: grid;
-  place-items: center;
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  letter-spacing: 0.06em;
-  color: color-mix(in srgb, var(--color-text) 70%, transparent);
+  object-fit: cover;
+  object-position: center 18%;
   transition: transform var(--dur-pop) var(--ease-zoom);
   will-change: transform;
 }
 
-.shell-gallery__item:hover .shell-gallery__swatch {
+.shell-gallery__item--featured .shell-gallery__img {
+  /* 锚点偏上：优先露头；4/3 框比 16/10 更高，腿部也能多露一点 */
+  object-position: center 12%;
+}
+
+.shell-gallery__item:hover .shell-gallery__img {
   transform: scale(var(--scale-hover-img));
+}
+
+.shell-gallery__caption {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 1.6rem 0.75rem 0.65rem;
+  background: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--color-bg) 88%, transparent) 0%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+.shell-gallery__caption-label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  color: var(--color-accent);
+}
+
+.shell-gallery__caption-sub {
+  font-size: 0.78rem;
+  color: color-mix(in srgb, var(--color-text) 85%, transparent);
+}
+
+@media (max-width: 720px) {
+  .shell-gallery {
+    grid-template-columns: 1fr;
+  }
+
+  .shell-gallery__item,
+  .shell-gallery__item--featured {
+    aspect-ratio: 4 / 3;
+  }
+}
+
+/* —— Profile：立绘 + 档案双栏 —— */
+.shell-profile {
+  display: grid;
+  grid-template-columns: minmax(11rem, 16rem) minmax(0, 1fr);
+  gap: 1.75rem 2rem;
+  align-items: start;
+  animation: shell-reveal-up 0.85s 0.08s var(--ease-reveal) both;
+}
+
+.shell-profile__portrait {
+  margin: 0;
+  border-radius: 1rem;
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+  background: var(--color-surface);
+  position: sticky;
+  top: 5.5rem;
+  transition:
+    border-color 0.15s ease,
+    box-shadow var(--dur-pop) var(--ease-pop);
+}
+
+.shell-profile__portrait:hover {
+  border-color: var(--color-accent);
+  box-shadow: 0 10px 28px color-mix(in srgb, var(--color-accent) 14%, transparent);
+}
+
+.shell-profile__img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  object-position: center 12%;
+  transition: transform var(--dur-pop) var(--ease-zoom);
+}
+
+.shell-profile__portrait:hover .shell-profile__img {
+  transform: scale(var(--scale-hover-img));
+}
+
+.shell-profile__portrait-cap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.75rem 0.85rem 0.9rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-text);
+  border-top: 1px solid var(--color-border);
+  background: var(--color-bg-elevated);
+}
+
+.shell-profile__portrait-sub {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+}
+
+.shell-profile__body {
+  min-width: 0;
+}
+
+.shell-profile__body .shell-section:first-child {
+  margin-top: 0;
+}
+
+@media (max-width: 720px) {
+  .shell-profile {
+    grid-template-columns: 1fr;
+  }
+
+  .shell-profile__portrait {
+    position: static;
+    max-width: 18rem;
+    margin-inline: auto;
+  }
 }
 
 /* —— 表单 —— */

@@ -1,5 +1,15 @@
 # Decision Log · 决策记录
 
+## 2026-07-17 · Gallery 真图落点与第一版范围
+
+- **决策**：
+  - 四张 OC 复制到 `public/gallery/`（站点资产）；源图仍在 `zzz-prompt-debug/origin/OC/generated/`
+  - **Gallery**：`rin-04` 通栏主视觉 + 三张设定表网格；第一版**不做**灯箱 Modal
+  - **Profile**：复用 `rin-04` 作左侧立绘双栏
+  - 主视觉竖图用 `aspect-ratio: 4/3` + `object-position: center 12%`（优先露头）
+- **原因**：用户明确要求放图；灯箱/更多图/压 WebP 不阻塞本版
+- **状态**：已生效
+
 ## 2026-07-17 · 双入口架构（Shell + Classic）
 
 - **决策**：主站用 **ShellLayout**（amashiro 版式 + 無限凜色）；原极简 **BaseLayout** 保留在 `/classic/` 作博客向入口

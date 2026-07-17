@@ -7,8 +7,9 @@
 | 项 | 说明 |
 | --- | --- |
 | Contact 真实发送 | 当前表单仅 UI + preventDefault；需表单服务或外部通道 |
-| Gallery 真实插画 / 生成图 | 现为占位色块网格 |
-| Gallery Modal 灯箱 | 参考站有 is-show Modal；第一版未做 |
+| Gallery 真实插画 / 生成图 | **第一版已落地（2026-07-17）**：`public/gallery/` 四张 OC；**后续可补图**（非本轮默认） |
+| Gallery 图压缩 / WebP | 当前 PNG 合计约 8MB；性能优化延期 |
+| Gallery Modal 灯箱 | 参考站有 is-show Modal；真图已上，**灯箱明确延期** |
 | 自定义展示字体（Montserrat 等） | 第一版系统栈 |
 | 角色 idle 动画（fuwafuwa 等） | 偏萌，冷静开发者站默认不做 |
 | 菜单全屏插画背景（对方素材） | 用几何/光晕替代，不抄素材 |

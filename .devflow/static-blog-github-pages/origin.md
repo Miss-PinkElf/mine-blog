@@ -40,3 +40,25 @@
 - 迁移确认：主站用 Shell；原布局保留为 `/classic` 极简入口；文章与工具组件/路由共用
 - 吸收状态：已落地 Shell 迁移，删除 `/preview/*`
 
+## 2026-07-17 · Gallery OC 真图接入
+
+- 用户恢复 mission：`NEXT-SESSION-PROMPT-static-blog-github-pages.md`
+- 源图（理解后放入站点）：
+  - `zzz-prompt-debug/origin/OC/generated/rin-01-global-design.png`（全身设定）
+  - `zzz-prompt-debug/origin/OC/generated/rin-02-angles-expressions.png`（角度/表情）
+  - `zzz-prompt-debug/origin/OC/generated/rin-03-actions.png`（动作）
+  - `zzz-prompt-debug/origin/OC/generated/rin-04-jk-server-room.png`（机房主视觉）
+- 意图：理解图片后放到合适位置（Gallery 主；Profile 立绘辅）
+- 吸收状态：已复制到 `public/gallery/` 并改 Gallery/Profile/首页文案/shell.css
+
+## 2026-07-17 · 主视觉裁切反馈
+
+- 用户反馈：主视觉「往下一点点」→ 锚点过低导致砍头 → 再改为保证露头
+- 落地：featured 比例 `4/3` + `object-position: center 12%`
+- 吸收状态：已调
+
+## 2026-07-17 · 会话收尾指令
+
+- 上下文过长新开对话；第一版/延期写入文档；读 `devflow-handoff.md` 收尾；更新文档并提交本对话相关代码；先提交再收尾、无需再确认
+- 吸收状态：执行 Close + handoff + commit
+
