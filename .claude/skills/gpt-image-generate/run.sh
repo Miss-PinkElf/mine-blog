@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
-# gpt-image-generate skill 自包含生图脚本（OpenAI Responses + image_generation）
+# gpt-image-generate skill 自包含生图脚本（OpenAI Chat Completions：/v1/chat/completions）
 # 本文件与 .env / gen-images / prompts 同级，不依赖仓库其它脚本。
+#
+# 协议说明:
+#   POST {BASE_URL}/chat/completions
+#   文生图: messages=[{role:user, content: 提示词}]
+#   图生图: messages content 数组 text + image_url(data URL)
+#   响应: choices[0].message.content 中 Markdown 图片 URL / data URL（兼容部分 b64 字段）
 #
 # 目录约定（均相对本脚本所在目录）:
 #   .env                  API Key / Base URL / Model
@@ -367,32 +373,36 @@ build_request_body_file() {
           cat "$b64_tmp"
         } >"$data_url_file"
         rm -f "$b64_tmp"
+        # Chat Completions 多模态：text + image_url
         jq -n \
           --arg model "$MODEL" \
           --arg prompt "$PROMPT" \
           --rawfile data_url "$data_url_file" \
           '{
             model: $model,
-            input: [
+            stream: false,
+            messages: [
               {
                 role: "user",
                 content: [
-                  { type: "input_text", text: $prompt },
-                  { type: "input_image", image_url: ($data_url | sub("\n$";"")) }
+                  { type: "text", text: $prompt },
+                  { type: "image_url", image_url: { url: ($data_url | sub("\n$";"")) } }
                 ]
               }
-            ],
-            tools: [ { type: "image_generation", action: "edit" } ]
+            ]
           }' >"$out_file"
         rm -f "$data_url_file"
       else
+        # Chat Completions 纯文生图
         jq -n \
           --arg model "$MODEL" \
           --arg prompt "$PROMPT" \
           '{
             model: $model,
-            input: $prompt,
-            tools: [ { type: "image_generation", action: "generate" } ]
+            stream: false,
+            messages: [
+              { role: "user", content: $prompt }
+            ]
           }' >"$out_file"
       fi
       ;;
@@ -434,11 +444,9 @@ json_meta_get() {
   case "$JSON_BACKEND" in
     jq)
       case "$field" in
-        size) jq -r '[.output[]? | select(.type=="image_generation_call") | .size][0] // empty' "$json_path" 2>/dev/null || true ;;
-        quality) jq -r '[.output[]? | select(.type=="image_generation_call") | .quality][0] // empty' "$json_path" 2>/dev/null || true ;;
-        output_format) jq -r '[.output[]? | select(.type=="image_generation_call") | .output_format][0] // empty' "$json_path" 2>/dev/null || true ;;
-        revised_prompt) jq -r '[.output[]? | select(.type=="image_generation_call") | .revised_prompt][0] // empty' "$json_path" 2>/dev/null || true ;;
-        tool_model) jq -r '.tools[0].model // empty' "$json_path" 2>/dev/null || true ;;
+        # Chat 协议通常无 size/quality/revised_prompt；尽量从 model 取
+        size|quality|output_format|revised_prompt) printf '' ;;
+        tool_model) jq -r '.model // empty' "$json_path" 2>/dev/null || true ;;
       esac
       ;;
     node) node "$JS_CODEC" meta --json "$json_path" --field "$field" ;;
@@ -447,32 +455,75 @@ json_meta_get() {
 }
 
 
-# jq 抽取图片 base64 的表达式（流式管道复用，避免塞进 bash 变量）
-IMAGE_B64_JQ='
-  (
-    [.output[]? | select(.type == "image_generation_call") | .result][0]
-  )
-  // (
-    [.output[]? | select(.type == "image_generation_call") | .result? // .image_base64? // .b64_json?][0]
-  )
+# jq：从 Chat Completions（及兼容字段）抽出图片源字符串
+# - Markdown: ![x](https://... 或 data:image/...;base64,...)
+# - content 数组 image_url
+# - data[0].b64_json / 旧 responses result（兜底）
+IMAGE_SRC_JQ='
+  def md_url:
+    if type == "string" then
+      (capture("!\\[[^\\]]*\\]\\((?<u>[^)]+)\\)") | .u) // empty
+    else empty end;
+  def content_src:
+    if type == "string" then
+      md_url
+      // (if test("^data:image/"; "i") then . else empty end)
+      // (if (test("^https?://") and length < 8192 and (contains("\n") | not)) then . else empty end)
+    elif type == "array" then
+      ([.[]?
+        | select(.type == "image_url" or .type == "output_image" or .type == "image")
+        | (.image_url.url? // .image_url? // .url? // .image? // empty)
+      ] | map(select(type == "string" and length > 8)) | .[0] // empty)
+    else empty end;
+  (.choices[0].message.content? | content_src)
+  // (.choices[0].message.image_url? // empty)
+  // .data[0].url?
   // .data[0].b64_json?
-  // (
-    [.output[]? | .content[]? | .image_url? // .b64_json? // .image_base64?][0]
-  )
+  // ([.output[]? | select(.type == "image_generation_call") | .result? // .image_base64? // .b64_json?][0] // empty)
   // empty
 '
 
-# 是否存在可解码的图片字段（只判断类型/长度，不把整段 base64 灌进 shell）
+# jq 抽取图片 base64 的表达式（仅当源本身是 b64 / data URL 时用；URL 走 curl 下载）
+IMAGE_B64_JQ='
+  ('"$IMAGE_SRC_JQ"') as $src
+  | if ($src | type) != "string" then empty
+    elif ($src | test("^https?://")) then empty
+    elif ($src | test("^data:image/"; "i")) then ($src | sub("^data:image/[^;]+;base64,"; ""))
+    else $src
+    end
+  | gsub("[\\n\\r ]"; "")
+'
+
+# 是否存在可落盘的图片源（URL 或 base64；不把大 base64 灌进 shell）
 has_image_b64() {
   local json_path="$1"
   case "$JSON_BACKEND" in
     jq)
       jq -e '
+        def md_ok:
+          type == "string" and (
+            test("!\\[[^\\]]*\\]\\((https?://|data:image/)[^)]+\\)")
+            or test("^data:image/"; "i")
+            or (test("^https?://") and length < 8192)
+          );
+        def arr_ok:
+          type == "array" and any(
+            .[]?;
+            (.type == "image_url" or .type == "output_image" or .type == "image")
+            and (
+              (.image_url.url? // .image_url? // .url? // "")
+              | type == "string" and length > 8
+            )
+          );
         (
-          [.output[]? | select(.type == "image_generation_call") | .result][0]
-          // .data[0].b64_json?
-          // empty
-        ) | type == "string" and length > 100
+          (.choices[0].message.content? | (md_ok or arr_ok))
+          or ((.data[0].b64_json? | type == "string" and length > 100))
+          or ((.data[0].url? | type == "string" and test("^https?://")))
+          or (
+            ([.output[]? | select(.type == "image_generation_call") | .result][0]
+            | type == "string" and length > 100)
+          )
+        )
       ' "$json_path" >/dev/null 2>&1
       ;;
     node)
@@ -486,17 +537,57 @@ has_image_b64() {
 }
 
 
-# 流式：jq 抽出 base64 -> base64 解码 -> 写文件
-# 关键点：不要 B64="$(jq ...)"，几 MB 字符串进 bash 变量会非常慢且占内存
+# 从 JSON 落盘图片：
+# - Chat content 里是 https URL → curl 下载
+# - data URL / 裸 base64 → 流式 base64 解码（禁止塞进 bash 变量）
+# - node/python 的 extract 已统一输出 base64（URL 会先下载再编码）
 save_image_from_json() {
   local json_path="$1"
   local out="$2"
   local tmp_out="${out}.tmp.$$"
 
-  if base64 --help 2>&1 | grep -q -- '-d'; then
-    stream_image_b64 "$json_path" | base64 -d > "$tmp_out"
+  if [[ "$JSON_BACKEND" == "jq" ]]; then
+    local src_kind src_url
+    # 仅探测类型：url / b64 / empty（短字段，安全）
+    src_kind="$(jq -r '
+      ('"$IMAGE_SRC_JQ"') as $src
+      | if ($src | type) != "string" or ($src | length) == 0 then "empty"
+        elif ($src | test("^https?://")) then "url"
+        else "b64"
+        end
+    ' "$json_path" 2>/dev/null || echo empty)"
+
+    if [[ "$src_kind" == "url" ]]; then
+      src_url="$(jq -r "($IMAGE_SRC_JQ)" "$json_path" 2>/dev/null || true)"
+      if [[ -z "$src_url" || ! "$src_url" =~ ^https?:// ]]; then
+        rm -f "$tmp_out"
+        return 1
+      fi
+      log "响应为图片 URL，开始下载..."
+      if ! curl -fsSL --connect-timeout "${CURL_CONNECT_TIMEOUT}" --max-time "${CURL_MAX_TIME}" \
+        -A "gpt-image-generate/1.0" -o "$tmp_out" "$src_url"; then
+        rm -f "$tmp_out"
+        return 1
+      fi
+    elif [[ "$src_kind" == "b64" ]]; then
+      if base64 --help 2>&1 | grep -q -- '-d'; then
+        jq -r "$IMAGE_B64_JQ" "$json_path" | tr -d '\n\r ' | base64 -d >"$tmp_out"
+      else
+        jq -r "$IMAGE_B64_JQ" "$json_path" | tr -d '\n\r ' | base64 -D >"$tmp_out" 2>/dev/null \
+          || jq -r "$IMAGE_B64_JQ" "$json_path" | tr -d '\n\r ' | base64 --decode >"$tmp_out"
+      fi
+    else
+      rm -f "$tmp_out"
+      return 1
+    fi
   else
-    stream_image_b64 "$json_path" | base64 -D > "$tmp_out" 2>/dev/null       || stream_image_b64 "$json_path" | base64 --decode > "$tmp_out"
+    # node / python：extract 统一吐 base64（含 URL 下载后编码）
+    if base64 --help 2>&1 | grep -q -- '-d'; then
+      stream_image_b64 "$json_path" | base64 -d >"$tmp_out"
+    else
+      stream_image_b64 "$json_path" | base64 -D >"$tmp_out" 2>/dev/null \
+        || stream_image_b64 "$json_path" | base64 --decode >"$tmp_out"
+    fi
   fi
 
   if [[ ! -s "$tmp_out" ]]; then
@@ -557,7 +648,7 @@ usage() {
 
 选项:
   -o, --output PATH        自定义输出图片路径（默认写入同级 gen-images/）
-  -m, --model NAME         Responses 主模型（默认: gpt-image-2）
+  -m, --model NAME         Chat Completions 模型（默认: gpt-image-2）
   --base-url URL           API Base URL（默认: https://shell.wyzlab.ai/v1）
   -p, --prompt-file PATH   指定提示词文件（默认: prompts/prompt-image.md）
   -i, --image PATH         参考图路径（图文同传 / 图生图编辑）
@@ -767,20 +858,20 @@ log "提示: 按 Ctrl+C 可立即停止（不会继续重试）"
 
 # ---------- 组装请求 ----------
 
-step "2/4 组装 Responses 请求"
+step "2/4 组装 Chat Completions 请求"
 REQUEST_BODY_FILE="$(mktemp -t generate-image-body.XXXXXX.json)"
 if ! build_request_body_file "$REQUEST_BODY_FILE"; then
   echo "错误: 组装请求体失败" >&2
   exit 1
 fi
 BODY_BYTES="$(wc -c < "$REQUEST_BODY_FILE" | tr -d ' ')"
-log "请求体已就绪（mode=${MODE} / bytes=${BODY_BYTES} / json=${JSON_BACKEND}）"
+log "请求体已就绪（mode=${MODE} / bytes=${BODY_BYTES} / json=${JSON_BACKEND} / protocol=chat）"
 
 # ---------- 发起请求（带 loading + 失败重试） ----------
 
 TOTAL_ATTEMPTS=$((MAX_RETRIES + 1))
 step "3/4 调用接口生成图片（最多 ${TOTAL_ATTEMPTS} 次尝试，失败最多重试 ${MAX_RETRIES} 次）"
-log "POST ${BASE_URL}/responses"
+log "POST ${BASE_URL}/chat/completions"
 log "重试策略: 任意请求/解析失败都会重试；间隔 ${RETRY_BASE_SLEEP}s 起递增，上限 30s"
 
 B64=""
@@ -806,7 +897,7 @@ for ((attempt=1; attempt<=TOTAL_ATTEMPTS; attempt++)); do
   curl -sS -o "$JSON_PATH" -w "%{http_code}" \
     --connect-timeout "${CURL_CONNECT_TIMEOUT}" \
     --max-time "${CURL_MAX_TIME}" \
-    -X POST "${BASE_URL}/responses" \
+    -X POST "${BASE_URL}/chat/completions" \
     -H "Authorization: Bearer ${API_KEY}" \
     -H "Content-Type: application/json" \
     --data-binary @"${REQUEST_BODY_FILE}" \
@@ -959,7 +1050,8 @@ printf '⏱  总耗时：%s\n' "$(elapsed_text)"
 printf '📦 文件大小：%s bytes\n' "$FILE_SIZE"
 
 # 机器可读结果块（供 skill 汇报：耗时 / 大小 / 路径）
-printf '\n---RESULT---\n'
+# 注意：macOS printf 会把以 --- 开头的 format 当成选项，必须用 %s 包一层
+printf '\n%s\n' '---RESULT---'
 printf 'status=ok\n'
 printf 'path=%s\n' "$OUTPUT"
 printf 'path_rel=%s\n' "$OUTPUT_REL"
@@ -973,5 +1065,5 @@ if [[ -n "$SOURCE_IMAGE" ]]; then
   printf 'source_image=%s\n' "$SOURCE_IMAGE"
 fi
 printf 'skill_dir=%s\n' "$SCRIPT_DIR"
-printf '---END_RESULT---\n'
+printf '%s\n' '---END_RESULT---'
 

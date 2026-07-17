@@ -2,15 +2,16 @@
 
 ## 背景
 
-需要在本地稳定调用 `shell.wyzlab.ai` 的 OpenAI 兼容 **Responses** 接口生成图片，并形成可维护的脚本与过程记录。
+需要在本地稳定调用 `shell.wyzlab.ai` 的 OpenAI 兼容接口生成图片，并形成可维护的 **自包含 Skill** 与过程记录。
+
+**协议（2026-07-17）**：主路径为 **Chat Completions**（`/v1/chat/completions`），不再以 Responses 为 skill 主协议。
 
 ## 目标
 
-1. 提供可配置、可重试、可中断的文生图 CLI
-2. 默认文件化提示词与本地密钥
-3. 结果可预测地落盘到 `scripts/gen-images/`
-4. 后续支持尺寸/比例/质量控制
-
+1. 提供可配置、可重试、可中断的文生图 / 图生图 CLI（Skill）
+2. 默认文件化提示词与本地密钥（skill 同级 `.env`）
+3. 结果可预测地落盘到 skill 内 `gen-images/`
+4. 后续支持尺寸/比例/质量控制（T7，Chat 适配）
 ## 用户故事
 
 1. 作为开发者，我编辑 `prompt-image.md` 后执行脚本，即可得到 png。
@@ -22,11 +23,10 @@
 
 ### In
 
-- bash CLI + env + http 调试文件
-- Responses `image_generation` 工具调用
-- 重试、中断、流式解码、落盘命名
-- size / quality / ratio（P2）
-
+- bash CLI + env（skill 自包含）
+- Chat Completions 文生图 / 图生图（`--image`）
+- 重试、中断、流式解码 / URL 下载、落盘命名、RESULT
+- size / quality / ratio（P2 / T7，第一版）
 ### Out
 
 - Web UI
@@ -42,5 +42,6 @@
 ## 状态
 
 - MVP：已实现
-- P2 尺寸控制：待 tasks 实施（T7）
+- P2 尺寸控制：待 tasks 实施（T7 · 须 Chat 适配）
 - 2026-07-16：图文同传（T11）+ JSON 回退（T13）+ 双 skill 同步（T14）已完成并通过实测
+- 2026-07-17：主协议切换 Chat Completions（T16）已完成；文生图/图生图/大参考图实测通过

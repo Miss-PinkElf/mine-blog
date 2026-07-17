@@ -33,6 +33,10 @@
 | 18 | 实测：zzz-prompt-debug/origin/优化生成图片脚本/image.png 图文编辑成功 | 2026-07-15 | 协议：input_text+input_image(data URL)；curl 可用；Python urllib 遇 CF 1010 | 已吸收待落地 |
 | 19 | 对话：范围 A+B；主环境 Mac（有 jq）；走完整 devflow | 2026-07-16 | 路径：重型；本轮非仅 T7 | 本轮 |
 | 20 | 对话：上下文过长，收尾 + commit + handoff | 2026-07-16 | Close 本轮；记录延期/下轮 | 本轮 |
+| 21 | 对话：修正 skill，使用 v1 chat 协议，不用 responses | 2026-07-17 | 协议切换 | 已吸收 skill |
+| 22 | 对话：先测试再变更；`has` 阈值与 printf 修复 | 2026-07-17 | 质量门禁 | 已吸收 |
+| 23 | 参考图：`zzz-prompt-debug/origin/OC/generated/rin-01-global-design.png` | 2026-07-17 | 真实 OC 图生图验证 | 已验证通过 |
+| 24 | 对话：上下文过长，收尾 + commit + handoff（本轮） | 2026-07-17 | Close 第三版 | 本轮 |
 
 ## 备注
 

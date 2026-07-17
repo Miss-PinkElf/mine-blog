@@ -15,24 +15,55 @@
 - `lib/json_codec.py` / `lib/json_codec.cjs`
 - `run.sh` / `SKILL.md`
 
-## 接口
+## 接口（Chat Completions）
 
-### 纯文
+### 端点
 
-- `POST {OPENAI_BASE_URL}/responses`
-- `input`: 字符串
-- `tools: [{ type: "image_generation", action: "generate" }]`
+- `POST {OPENAI_BASE_URL}/chat/completions`
+- **不再使用** `POST .../responses` 与 `tools: image_generation`
+
+### 纯文生图
+
+```json
+{
+  "model": "gpt-image-2",
+  "stream": false,
+  "messages": [
+    { "role": "user", "content": "提示词" }
+  ]
+}
+```
 
 ### 图文（--image）
 
-- `input`: user content 数组，`input_text` + `input_image`（data URL）
-- `tools: [{ type: "image_generation", action: "edit" }]`
+```json
+{
+  "model": "gpt-image-2",
+  "stream": false,
+  "messages": [
+    {
+      "role": "user",
+      "content": [
+        { "type": "text", "text": "编辑指令" },
+        { "type": "image_url", "image_url": { "url": "data:image/png;base64,..." } }
+      ]
+    }
+  ]
+}
+```
+
 - curl：`--data-binary @request.json`（避免超大 body 进 argv）
 
 ### 响应图片
 
-- `output[].type == image_generation_call` → `result` base64
-- 解码：JSON 工具抽出 base64 **流式** pipe 到系统 `base64 -d`（禁止塞进 bash 变量）
+常见形态（按优先级解析）：
+
+1. `choices[0].message.content` 为 Markdown：`![image](https://...png)` → **curl 下载**
+2. 同上 Markdown 内嵌 `data:image/...;base64,...` → 流式 base64 解码
+3. `content` 为数组，含 `type=image_url`
+4. 兼容：`data[0].b64_json` / 旧 `output[].image_generation_call.result`
+
+解码原则：JSON 工具抽出 base64 **流式** pipe 到系统 `base64 -d`（禁止塞进 bash 变量）；URL 则 `curl -o`。
 
 ## JSON 工具优先级
 

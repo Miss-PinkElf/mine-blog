@@ -10,7 +10,17 @@
 
 - **决策**：不优先走 `/v1/images/generations`，而走 `/v1/responses` + `tools: [{type:"image_generation", action:"generate"}]`
 - **原因**：用户指定接口协议为 OpenAI Responses；中转实测返回标准 `image_generation_call`
-- **状态**：已生效
+- **状态**：**已由 2026-07-17 决策取代**（见下方 Chat Completions）
+
+## 2026-07-17 · 协议切换：Chat Completions 为主路径
+
+- **决策**：Skill `run.sh` / `json_codec` 主路径改为 `POST /v1/chat/completions`；**不再**调用 `/v1/responses` 与 `tools.image_generation`
+- **请求**：
+  - 文生图：`messages: [{role:"user", content: 提示词}]`
+  - 图生图：`content: [{type:text}, {type:image_url, image_url:{url: data URL}}]`
+- **响应**：优先解析 `choices[0].message.content` 中 Markdown `![...](url)`；`https` → curl 下载；`data:image` → 流式 base64 解码；兼容旧 data/b64 与 responses 字段兜底
+- **原因**：用户明确要求使用 v1 chat 协议、不用 responses；中转实测 chat 文生图/图生图均可用
+- **状态**：已生效（skill 双目录）；仓库 `scripts/generate-image.sh` **尚未**迁移（见 backlog）
 
 ## 2026-07-15 · 配置与提示词输入
 

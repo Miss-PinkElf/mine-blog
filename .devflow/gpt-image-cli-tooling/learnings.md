@@ -28,3 +28,12 @@
 4. **urllib 可能被中转 CF 1010 拦截**；脚本路径继续用 curl。
 5. **双目录**：Codex 读 `.codex/skills/`，Claude 读 `.claude/skills/`；以 claude 为真相源，改完必须同步 codex。
 6. **Windows 注意**：shebang/`env bash` 与 CRLF 会导致「No such file」；脚本宜 LF；用 `bash run.sh` 更稳。
+
+## 2026-07-17
+
+1. **Chat 生图响应常见是 Markdown URL**，不一定是 base64：`choices[0].message.content` ≈ `![image](https://...png)`，需 curl 下载再落盘。
+2. **协议字段彻底不同**：Chat 用 `messages` + `image_url`；旧 Responses 的 `input` / `input_text` / `image_generation` / `action` 不应再作为 skill 主路径。
+3. **macOS printf 坑**：`printf '---xxx---\n'` 可能被当成选项；固定用 `printf '%s\n' '---xxx---'`。
+4. **`has` 阈值**：不能用过大的 base64 长度门槛；极小 PNG 合法 base64 可 <100。
+5. **大参考图可行**：约 1.9MB OC 立绘 data URL（请求体约 2.5MB）+ Chat 图生图实测约 75s 成功；body 仍必须 `@file`。
+6. **T7 不可照搬旧 design**：Chat 无 `tools[0].size` 写入点；下轮 size/ratio 需重新设计（提示词约定 / 网关扩展字段 / 或另开 images API）。

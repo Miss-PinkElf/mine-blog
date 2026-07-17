@@ -6,7 +6,8 @@
 
 ## 背景
 
-用户需在本地调用中转站 GPT Image（Responses 协议），从 curl / REST Client 演进为可维护脚本，再封装为**自包含 Claude Skill**，并纳入 devflow 重型治理。
+用户需在本地调用中转站 GPT Image，从 curl / REST Client 演进为可维护脚本，再封装为**自包含 Claude/Codex Skill**，并纳入 devflow 重型治理。  
+**2026-07-17 起 skill 主协议为 Chat Completions**（不再以 Responses 为主路径）。
 
 ## 已完成阶段（本对话）
 
@@ -57,3 +58,22 @@
 
 - `plans/2026-07-16-image-text-jq-align.md`
 - `plans/2026-07-16-image-text-jq-fallback-plan.md`
+
+## 2026-07-17 增量（第三版 · Chat 协议）
+
+### 目标
+
+按用户要求将 skill 从 Responses 改为 **v1 Chat Completions**，保持文生图 + 图生图能力，并验证真实 OC 大参考图。
+
+### 过程摘要
+
+1. 改造 `run.sh` / `json_codec` 请求体与端点；响应支持 Markdown URL 下载与 data URL 解码  
+2. 修复 macOS `printf ---` 与 `has` 短 base64 边界  
+3. 实测：文生图 ~20s；小图编辑 ~28s；`rin-01-global-design.png` 图生图 ~75s  
+4. 更新 decision/bug/tasks/design；T7 标记须 Chat 适配；scripts 旧协议记入 backlog  
+5. 会话 Close/Handoff  
+
+### 产物
+
+- Skill：`.claude/skills/gpt-image-generate/`（同步 `.codex/...`）
+- 最新 handoff：`handoffs/2026-07-17-001-chat-protocol-session-close.md`

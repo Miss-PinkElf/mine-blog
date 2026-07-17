@@ -42,3 +42,17 @@
 - 用户核查 key `sk-C2h0…`：**未进入 git 历史**；仅本机 ignore 文件
 - 历史中 `generate-image.http` 曾含另一 key 前缀 `sk-nD7a…`（`f76cec2`/`e84276d`）；文件已 untrack
 - **状态**：已记录；key 轮换由用户侧处理
+
+## BUG-006 · macOS printf 以 `---` 开头导致 exit≠0
+
+- **现象**：生图已成功落盘，但脚本末尾 `printf '---END_RESULT---\n'` 报 `printf: --: invalid option`，进程 exit 2
+- **原因**：macOS / bash builtin `printf` 把以 `-` 开头的 format 当成选项
+- **方案**：改为 `printf '%s\n' '---RESULT---'` / `printf '%s\n' '---END_RESULT---'`
+- **状态**：已修复（2026-07-17）
+
+## BUG-007 · `has` 对短 base64 误判无图
+
+- **现象**：单元测试用 1×1 PNG（base64 约 96 字符）时，`kind`/`extract` 成功但 `has` 返回失败
+- **原因**：阈值 `len > 100` 过严
+- **方案**：`has` 对 b64 改为 `len >= 32`（python/node codec）
+- **状态**：已修复（2026-07-17）；真实大图/URL 路径本不受影响

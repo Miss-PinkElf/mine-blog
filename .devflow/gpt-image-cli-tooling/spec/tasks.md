@@ -7,12 +7,12 @@
 - [x] `.env.example` 模板
 - [x] gitignore 密钥与产物
 
-## T2 · Responses 生图主路径
+## T2 · 生图主路径（历史：Responses → 2026-07-17 起 Chat）
 
-- [x] `POST /responses` + `image_generation` / `action=generate`
-- [x] 解析 `output[].result` base64
+- [x] （历史）`POST /responses` + `image_generation` / `action=generate`
+- [x] （历史）解析 `output[].result` base64
 - [x] 兼容字段探测（失败摘要截断）
-
+- [x] **（现行）`POST /chat/completions` + `messages`**（见 T16）
 ## T3 · 提示词与落盘
 
 - [x] 默认读 `prompts-images/prompt-image.md`
@@ -38,14 +38,13 @@
 - [x] proposal / design / tasks 三件套
 - [x] 本轮代码与文档提交（`35046b2`）
 
-## T7 · 尺寸 / 比例 / 质量（下一轮 Apply）
+## T7 · 尺寸 / 比例 / 质量（下一轮 Apply · 第一版即可）
 
 - [ ] CLI：`--size`、`--quality`、`--ratio`
 - [ ] `.env`：`OPENAI_IMAGE_SIZE` / `OPENAI_IMAGE_QUALITY` / `OPENAI_IMAGE_RATIO`
-- [ ] 请求体写入 tools 字段
+- [ ] **按 Chat 协议设计写入方式**（不可再写 Responses `tools[0]`；可选：提示词前缀约定 / 网关扩展字段）
 - [ ] help 与 plan 对齐说明
 - [ ] 真实调用验证至少 1:1 与 2:3 各一次
-
 ## T8 · Verify
 
 - [ ] 无 key 失败路径
@@ -98,7 +97,18 @@
 - [x] help / 语法 / 双目录 diff
 - [x] 更新 state/workflow/checkpoint（本轮）
 
-## 当前建议执行顺序（2026-07-16 更新）
+## T16 · Chat Completions 协议切换（2026-07-17）
 
-1. **本轮 T11–T15：已完成**（图文同传 + JSON 回退 + 双目录同步 + 实测）
-2. 后续：T7 size/ratio/quality → T8 完整 Verify
+- [x] `run.sh` 端点改为 `POST /chat/completions`
+- [x] 请求体：文生图 messages 文本；图生图 text + image_url(data URL)
+- [x] 响应：Markdown URL 下载 / data URL base64 解码；codec 三后端一致
+- [x] 修 printf RESULT 块；修 has 短 base64
+- [x] 同步 `.codex/skills/gpt-image-generate/`
+- [x] 实测：文生图、图生图、OC 大参考图
+- [x] mission 文档 + handoff 收尾
+
+## 当前建议执行顺序（2026-07-17 更新）
+
+1. **本轮 T16：已完成**（Chat 协议 + 实测 + 收尾）
+2. 后续：T7 size/ratio/quality（Chat 适配第一版）→ T8 完整 Verify
+3. 可选 backlog：仓库 scripts 迁 Chat / 废弃双轨

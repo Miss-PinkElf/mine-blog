@@ -1,7 +1,7 @@
 ---
 name: gpt-image-generate
 description: |
-  自包含文生图 / 图生图 skill：在本目录用 OpenAI Responses + image_generation 生成 png。
+  自包含文生图 / 图生图 skill：在本目录用 OpenAI Chat Completions（/v1/chat/completions）生成 png。
   用户说「生成图片」「画一张」「文生图」「gpt-image」「出图」「改图」「参考图」「图生图」
   或给出画面意图 / 提供本地参考图时使用。
   检查 JSON 工具（jq 优先，否则 node/python）、读取同级 .env、执行 run.sh、汇报耗时/大小/路径；
@@ -114,7 +114,8 @@ chmod +x .codex/skills/gpt-image-generate/run.sh
 
 - **不要**再调用 `scripts/generate-image.sh`
 - 目录创建、重试、解码、命名全部由 `run.sh` 完成
-- 有参考图时请求 `action=edit`；无图时 `action=generate`
+- 协议固定：`POST {BASE_URL}/chat/completions`（**不用** `/responses`）
+- 有参考图：`messages` 多模态 `text` + `image_url`；无图：纯文本 `messages`
 
 ## 成功后必须汇报
 

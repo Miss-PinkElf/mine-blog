@@ -10,3 +10,9 @@
 
 - 2026-07-15 · T9 Skill 封装 + 默认模型修复（已从 checkpoints 轮换）
 
+
+## 2026-07-15 · 会话 Close / Handoff（第一版）
+
+- **阶段**：Close / Handoff
+- **已完成**：第一版 CLI + 自包含 Skill
+- **归档时间**：2026-07-17（checkpoints 滚动）
