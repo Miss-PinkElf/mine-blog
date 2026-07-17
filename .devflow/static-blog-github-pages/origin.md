@@ -24,3 +24,19 @@
 
 - 用户要求：上下文过长，新开对话继续；记录第一版/延期项；读 `devflow-handoff.md` 收尾；更新文档并提交本对话相关代码；默认不提交 config.ts / gitignore / tsconfig；先提交再收尾、无需再确认
 - 吸收状态：执行 Close + handoff + commit
+
+## 2026-07-17 · 视觉参考与预览路由
+
+- 原始提示：`zzz-prompt-debug/origin/blog/prompt-1.md`
+- 参考站：https://amashiro.com/ 、/profile/ 、/gallery/ 、/contact/
+- 意图：分析 CSS/版式并借鉴；**色系保留無限凜**
+- 用户确认：原站不动；新开 `/preview/*` 先看效果，再决定迁移
+- 吸收状态：已 Align + Plan + 本地实现四页预览
+
+## 2026-07-17 · 动效 / 菜单逻辑 / 壳迁移
+
+- 动效：Q 弹 scale 阶梯（amashiro cubic-bezier）
+- 菜单逻辑：`prompt-2.md` → opened/closed 状态机
+- 迁移确认：主站用 Shell；原布局保留为 `/classic` 极简入口；文章与工具组件/路由共用
+- 吸收状态：已落地 Shell 迁移，删除 `/preview/*`
+

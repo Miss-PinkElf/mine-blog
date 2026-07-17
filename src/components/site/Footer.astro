@@ -1,11 +1,15 @@
 ---
 const year = new Date().getFullYear();
+const base = import.meta.env.BASE_URL;
 ---
 
 <footer class="site-footer">
   <div class="site-footer__inner">
     <p class="site-footer__copy">© {year} 無限凜</p>
-    <p class="site-footer__tagline muted">博客 · 小工具</p>
+    <p class="site-footer__tagline muted">
+      博客 · 小工具 ·
+      <a class="site-footer__shell-link" href={base}>主站壳</a>
+    </p>
   </div>
 </footer>
 
@@ -33,5 +37,14 @@ const year = new Date().getFullYear();
   .site-footer__tagline {
     margin: 0.35rem 0 0;
     font-size: 0.85rem;
+  }
+
+  .site-footer__shell-link {
+    color: var(--color-accent);
+    text-decoration: none;
+  }
+
+  .site-footer__shell-link:hover {
+    color: var(--color-highlight);
   }
 </style>

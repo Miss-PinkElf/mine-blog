@@ -2,6 +2,7 @@
 
 | 序号 | 文件 | 日期 | 标记 | 摘要 |
 | --- | --- | --- | --- | --- |
-| 001 | `2026-07-15-001-mvp-apply-close.md` | 2026-07-15 | **latest** | MVP Apply 完成并会话收尾；下一步合并/Pages 上线 |
+| 001 | `2026-07-15-001-mvp-apply-close.md` | 2026-07-15 | superseded | MVP Apply 完成；下一步合并/Pages |
+| 002 | `2026-07-17-002-shell-migrate-close.md` | 2026-07-17 | **latest** | Shell 迁移 + 视觉续作收尾 |
 
 恢复时优先读 **latest**。

@@ -5,3 +5,6 @@
 - favicon / OG 图可做成更完整的無限凜标识
 - 本地 `npm run preview` 做一次带 base 的人工点验
 - 文档站式「写作日期排序/置顶」字段（若以后文章变多）
+- Shell 首页 Recent Posts 可与 blog 列表样式再统一一档
+- Profile 文案从占位改成正式自我介绍
+- 主站与 Classic 顶栏文案可再润色（「极简入口 / 主站壳」命名）

@@ -1,5 +1,23 @@
 # Decision Log · 决策记录
 
+## 2026-07-17 · 双入口架构（Shell + Classic）
+
+- **决策**：主站用 **ShellLayout**（amashiro 版式 + 無限凜色）；原极简 **BaseLayout** 保留在 `/classic/` 作博客向入口
+- **共用**：`/blog/*`、`/tools/*` 仅一套路由；`PostCard` / `ToolCard` / `JsonFormatter` / `data/tools.ts` 共用
+- **原因**：用户要先迁移新壳，又暂留原入口；阅读/工具区保持极简
+- **状态**：已生效
+
+## 2026-07-17 · 菜单交互同构 amashiro
+
+- **决策**：右上角按钮为 **opened/closed 状态机**（btn + bg + nav），不换 URL；非 SPA 路由
+- **原因**：`prompt-2` 描述的「点开像换页、再点回去」是层切换
+- **状态**：已生效
+
+## 2026-07-17 · 视觉借鉴边界
+
+- **决策**：借鉴布局/动效/菜单逻辑；**色系锁定無限凜 token**；不抄对方插画与白蓝皮
+- **状态**：已生效
+
 ## 2026-07-15 · 收尾与分支
 
 - **决策**：MVP 实现落在功能分支 `feat/mugen-rin-astro-mvp`；收尾会话提交本 mission 相关文件；默认不提交 `.gitignore` / `tsconfig.json`

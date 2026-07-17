@@ -1,5 +1,12 @@
 # Learnings
 
+## 2026-07-17 · 参考站分析与迁移顺序
+
+- 先拆 **token / 布局 / 状态机 / 动效**，再做隔离预览路由，最后迁移主站，回退成本低。
+- amashiro 菜单是 **class 状态机** 不是换页；Q 弹核心是 `cubic-bezier(.17,.67,0,1.85)` + hover/active scale 阶梯。
+- 图片缩放应在 `overflow:hidden` 内对子元素 scale，避免布局抖。
+- 关菜单时 transition 清零，避免「倒放」拖沓。
+
 ## 2026-07-15 · GitHub Pages 与渲染模型
 
 - Pages **不是** SSR 运行时，只托管静态文件。

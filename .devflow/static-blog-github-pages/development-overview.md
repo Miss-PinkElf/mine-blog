@@ -7,17 +7,17 @@
 ## 时间线
 
 1. **需求**：纯静态博客 + 小工具；参考 awesome-design-md / Open Design。
-2. **Align**：并重定位；选 Astro（用户愿学新栈）；暗色极简；骨架 MVP；JSON 工具；站名無限凜；色板采用用户 Mugen Rin 图；DESIGN.md 自写结构参考第三方。
-3. **Plan**：九任务实施计划落盘。
-4. **Spec**：proposal / design / tasks。
-5. **Apply**：功能分支 `feat/mugen-rin-astro-mvp`；subagent（grok-4.5）串行 T1–T8；主会话 T9 验收 build 7 页。
-6. **Close**：文档收尾、deferred/backlog、handoff、提交本对话相关代码。
+2. **Align**：并重定位；选 Astro；暗色极简；骨架 MVP；JSON 工具；站名無限凜；Mugen Rin 色板；DESIGN.md。
+3. **Plan / Spec / Apply MVP**：T1–T9；本地 build 7 页。
+4. **2026-07-17 视觉续作**：分析 amashiro.com（色/版式/动效/菜单逻辑）→ `/preview` 实验 → Q 弹与状态机菜单 → **Shell 迁移主站** + **Classic 极简入口** + 共用 blog/tools。
+5. **分析落盘**：`zzz-prompt-debug/origin/blog/amashiro-design-analysis.md`。
+6. **Close**：文档与 handoff；提交本对话相关代码。
 
 ## 关键决策（摘要）
 
-详见 `decision-log.md`。核心：Astro+Pages SSG、不整站 antd、accent `#39FF14`、`base: '/mine-blog/'`、中文 UI + 繁体站名。
+详见 `decision-log.md`。核心：Astro+Pages SSG、accent `#39FF14`、`base: '/mine-blog/'`、**Shell+Classic 双入口**、菜单状态机、借鉴不抄色。
 
 ## 当前仓库事实
 
-- 源码在分支 `feat/mugen-rin-astro-mvp`（收尾时提交）。
-- 远端上线依赖 merge/push + Pages=Actions。
+- 本地 `npm run build` **11 页**（Shell 主站 + classic + blog/tools + 404）。
+- 远端上线仍依赖 merge/push + Pages=Actions（若尚未完成）。

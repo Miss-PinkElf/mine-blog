@@ -1,0 +1,1062 @@
+/**
+ * 主站壳层（Shell）样式（amashiro 版式语言 × 無限凜 token）
+ * 动效：Q 弹缩放阶梯 + 入场揭示 + 菜单错峰（参考 amashiro cubic-bezier）
+ * 主站 Shell 使用；BaseLayout/极简入口仍用 global.css
+ */
+
+@import "../tokens.css";
+
+.shell-root {
+  /* —— 动效 token（对齐 amashiro 手感） —— */
+  --ease-pop: cubic-bezier(0.17, 0.67, 0, 1.85); /* Q 弹 / 略过冲 */
+  --ease-reveal: cubic-bezier(0, 0.8, 0.2, 1); /* 长入场，先快后稳 */
+  --ease-zoom: cubic-bezier(0.33, 1, 0.68, 1); /* 图片平滑 zoom */
+  --dur-pop: 0.3s;
+  --dur-reveal: 1.1s;
+  --scale-hover-sm: 1.015;
+  --scale-hover-md: 1.03;
+  --scale-hover-lg: 1.07;
+  --scale-hover-img: 1.04;
+  --scale-press: 0.98;
+  --scale-press-hard: 0.95;
+
+  --shell-menu-size: 3.25rem;
+  --shell-gutter: clamp(1rem, 3vw, 2rem);
+  --shell-content-max: 56rem;
+
+  margin: 0;
+  min-height: 100vh;
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+.shell-root *,
+.shell-root *::before,
+.shell-root *::after {
+  box-sizing: border-box;
+}
+
+.shell-root a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.shell-main {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: var(--shell-content-max);
+  margin-inline: auto;
+  padding: 5.5rem var(--shell-gutter) 3rem;
+  min-height: 70vh;
+}
+
+/* —— 竖排站名 —— */
+.shell-sitename {
+  position: fixed;
+  z-index: 40;
+  left: clamp(0.65rem, 2vw, 1.5rem);
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  margin: 0;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  letter-spacing: 0.35em;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  opacity: 0.45;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* —— 角标 / 返回 —— */
+.shell-badge-bar {
+  position: fixed;
+  z-index: 60;
+  top: 0.85rem;
+  left: var(--shell-gutter);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  max-width: calc(100vw - 6rem);
+}
+
+.shell-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.28rem 0.65rem;
+  border: 1px solid color-mix(in srgb, var(--color-accent) 45%, var(--color-border));
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-bg) 85%, var(--color-accent));
+  color: var(--color-accent);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+
+.shell-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.28rem 0.7rem;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-bg-elevated);
+  color: var(--color-text-muted);
+  font-size: 0.78rem;
+  transition:
+    color var(--dur-pop) ease,
+    border-color var(--dur-pop) ease,
+    transform var(--dur-pop) var(--ease-pop);
+}
+
+.shell-back:hover {
+  color: var(--color-accent);
+  border-color: var(--color-accent);
+  transform: scale(var(--scale-hover-md));
+}
+
+.shell-back:active {
+  transform: scale(var(--scale-press));
+}
+
+/* —— 菜单状态机（对齐 amashiro：btn + bg + nav，opened/closed） —— */
+
+/* 打开时锁滚动 */
+body.shell-menu-open {
+  overflow: hidden;
+}
+
+/* 右上角按钮 #st-Menu */
+.shell-menu-btn {
+  position: fixed;
+  z-index: 200;
+  top: 0.75rem;
+  right: var(--shell-gutter);
+  width: var(--shell-menu-size);
+  height: var(--shell-menu-size);
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  background: transparent;
+  color: #041204;
+  display: grid;
+  place-items: center;
+  transition: transform var(--dur-pop) var(--ease-pop);
+}
+
+.shell-menu-btn:hover {
+  transform: scale(var(--scale-hover-lg));
+}
+
+.shell-menu-btn:active {
+  transform: scale(var(--scale-press-hard));
+}
+
+.shell-menu-btn:focus-visible {
+  outline: 2px solid var(--color-highlight);
+  outline-offset: 3px;
+}
+
+.shell-menu-btn__blob {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--color-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 25%, transparent);
+  transition:
+    background-color 0.2s ease,
+    box-shadow var(--dur-pop) var(--ease-pop),
+    border-color 0.2s ease;
+}
+
+.shell-menu-btn.opened .shell-menu-btn__blob {
+  background: var(--color-surface);
+  border: 2px solid var(--color-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 20%, transparent);
+}
+
+.shell-menu-btn.opened {
+  color: var(--color-accent);
+}
+
+.shell-menu-btn__lines {
+  position: relative;
+  z-index: 1;
+  width: 1.45rem;
+  height: 1rem;
+}
+
+.shell-menu-btn .line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  display: block;
+  height: 3px;
+  border-radius: 99px;
+  background: currentColor;
+  transition: transform var(--dur-pop) var(--ease-pop), top var(--dur-pop) var(--ease-pop);
+  transform-origin: center;
+}
+
+.shell-menu-btn .line:nth-child(1) {
+  top: 0.15rem;
+}
+
+.shell-menu-btn .line:nth-child(2) {
+  top: 0.65rem;
+}
+
+/* 两线合成 X */
+.shell-menu-btn.opened .line:nth-child(1) {
+  top: 0.4rem;
+  transform: rotate(45deg);
+}
+
+.shell-menu-btn.opened .line:nth-child(2) {
+  top: 0.4rem;
+  transform: rotate(-45deg);
+}
+
+/* 背景层 #st-Header_Bg */
+.shell-header-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 160;
+  background:
+    radial-gradient(
+      ellipse 70% 60% at 15% 80%,
+      color-mix(in srgb, var(--color-accent) 22%, transparent),
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse 50% 50% at 90% 10%,
+      color-mix(in srgb, var(--color-highlight) 12%, transparent),
+      transparent 50%
+    ),
+    var(--color-bg);
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.shell-header-bg.closed {
+  opacity: 0;
+  pointer-events: none;
+  /* 关闭瞬间清掉过渡，避免倒放拖沓 */
+  transition: opacity 0s, transform 0s;
+}
+
+.shell-header-bg.opened {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.shell-header-bg__glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at 70% 40%,
+    color-mix(in srgb, var(--color-accent) 16%, transparent),
+    transparent 45%
+  );
+  transform: scale(1.2);
+  opacity: 0;
+  transition:
+    opacity 0.3s ease,
+    transform 2.2s var(--ease-reveal);
+}
+
+.shell-header-bg.opened .shell-header-bg__glow {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.shell-header-bg.closed .shell-header-bg__glow {
+  opacity: 0;
+  transform: scale(1.2);
+  transition: opacity 0s, transform 0s;
+}
+
+.shell-header-bg__grid {
+  position: absolute;
+  inset: 0;
+  opacity: 0.12;
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--color-accent) 40%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--color-accent) 40%, transparent) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse at center, #000 20%, transparent 75%);
+}
+
+/* 导航层 #st-Header_Nav */
+.shell-header-nav {
+  position: fixed;
+  inset: 0;
+  z-index: 180;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5rem var(--shell-gutter) 2rem;
+  transition: opacity 0.45s var(--ease-reveal);
+}
+
+.shell-header-nav.closed {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0s, transform 0s;
+}
+
+.shell-header-nav.opened {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.shell-header-nav__inner {
+  width: min(28rem, 100%);
+}
+
+.shell-header-nav__label {
+  margin: 0 0 1.25rem;
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.shell-header-nav__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+/* 关闭：瞬间归位 */
+.shell-header-nav.closed .shell-header-nav__list li {
+  opacity: 0;
+  transform: translateX(-40px);
+  transition: none;
+}
+
+/* 打开：错峰滑入 */
+.shell-header-nav.opened .shell-header-nav__list li {
+  opacity: 1;
+  transform: translateX(0);
+  transition:
+    opacity 0.6s var(--ease-reveal),
+    transform 1s var(--ease-reveal);
+}
+
+.shell-header-nav.opened .shell-header-nav__list li:nth-child(1) {
+  transition-delay: 0.12s;
+}
+.shell-header-nav.opened .shell-header-nav__list li:nth-child(2) {
+  transition-delay: 0.2s;
+}
+.shell-header-nav.opened .shell-header-nav__list li:nth-child(3) {
+  transition-delay: 0.28s;
+}
+.shell-header-nav.opened .shell-header-nav__list li:nth-child(4) {
+  transition-delay: 0.36s;
+}
+
+.shell-header-nav__link {
+  display: block;
+  padding: 0.9rem 0.25rem;
+  color: var(--color-text);
+  font-size: clamp(1.35rem, 4vw, 1.85rem);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-border) 70%, transparent);
+  transition:
+    color 0.15s ease,
+    transform var(--dur-pop) var(--ease-pop);
+}
+
+.shell-header-nav__link:hover {
+  color: var(--color-accent);
+  transform: scale(var(--scale-hover-sm));
+}
+
+.shell-header-nav__link:active {
+  transform: scale(var(--scale-press));
+}
+
+.shell-header-nav__link.is-active {
+  color: var(--color-accent);
+}
+
+.shell-header-nav__meta {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  line-height: 1.55;
+}
+
+.shell-header-nav.opened .shell-header-nav__meta {
+  animation: shell-fade-in 0.7s 0.4s var(--ease-reveal) both;
+}
+
+@keyframes shell-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes shell-reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 标题：略放大后收到 1，偏 Q 的入场 */
+@keyframes shell-title-settle {
+  from {
+    opacity: 0;
+    transform: scale(1.12);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes shell-glow-in {
+  from {
+    opacity: 0;
+    transform: scale(1.2);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* —— 页标题 —— */
+.shell-page-title {
+  position: relative;
+  margin: 0 0 2rem;
+  text-align: center;
+  font-size: clamp(2rem, 6vw, 3rem);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1.15;
+  animation: shell-title-settle var(--dur-reveal) var(--ease-reveal) both;
+}
+
+.shell-page-title::after {
+  content: "";
+  display: block;
+  width: min(12rem, 50%);
+  height: 2px;
+  margin: 0.85rem auto 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--color-accent),
+    var(--color-highlight),
+    transparent
+  );
+  transform-origin: center;
+  animation: shell-fade-in 0.8s 0.25s var(--ease-reveal) both;
+}
+
+.shell-page-title span {
+  background: linear-gradient(
+    180deg,
+    var(--color-text) 20%,
+    color-mix(in srgb, var(--color-accent) 55%, var(--color-text)) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.shell-lead {
+  margin: 0 auto 2rem;
+  max-width: 36rem;
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 0.98rem;
+  animation: shell-reveal-up 0.85s 0.12s var(--ease-reveal) both;
+}
+
+/* —— Footer —— */
+.shell-footer {
+  position: relative;
+  margin-top: 4rem;
+  padding: 3.5rem var(--shell-gutter) 2rem;
+  background:
+    radial-gradient(
+      ellipse 50% 80% at 90% 100%,
+      color-mix(in srgb, var(--color-accent) 12%, transparent),
+      transparent 70%
+    ),
+    var(--color-bg-elevated);
+  border-top: 1px solid var(--color-border);
+  overflow: hidden;
+}
+
+.shell-footer::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -1px;
+  height: 14px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--color-accent) 0 10px,
+    transparent 10px 18px
+  );
+  opacity: 0.35;
+  mask-image: linear-gradient(90deg, transparent, #000 15%, #000 85%, transparent);
+}
+
+.shell-footer__inner {
+  position: relative;
+  z-index: 1;
+  max-width: var(--shell-content-max);
+  margin-inline: auto;
+  text-align: center;
+}
+
+.shell-footer__brand {
+  margin: 0 0 0.5rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--color-text);
+  display: inline-block;
+  transition: transform var(--dur-pop) var(--ease-pop);
+}
+
+.shell-footer__brand:hover {
+  transform: scale(var(--scale-hover-md));
+  color: var(--color-accent);
+}
+
+.shell-footer__nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem 1.25rem;
+  margin: 1.25rem 0;
+  list-style: none;
+  padding: 0;
+}
+
+.shell-footer__nav li {
+  transition: transform var(--dur-pop) var(--ease-pop);
+}
+
+.shell-footer__nav li:hover {
+  transform: scale(1.04);
+}
+
+.shell-footer__nav li:active {
+  transform: scale(1);
+}
+
+.shell-footer__nav a {
+  display: inline-block;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+  transition: color 0.15s ease;
+}
+
+.shell-footer__nav a:hover {
+  color: var(--color-accent);
+}
+
+.shell-footer__copy {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+}
+
+/* —— 通用卡片 —— */
+.shell-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 1rem;
+}
+
+.shell-card {
+  display: block;
+  padding: 1.35rem 1.25rem;
+  border: 1px solid var(--color-border);
+  border-radius: 1.1rem;
+  background: var(--color-surface);
+  transform-origin: center center;
+  transition:
+    border-color 0.15s ease,
+    transform var(--dur-pop) var(--ease-pop),
+    box-shadow var(--dur-pop) var(--ease-pop);
+  animation: shell-reveal-up 0.85s var(--ease-reveal) both;
+}
+
+.shell-card-grid .shell-card:nth-child(1) {
+  animation-delay: 0.15s;
+}
+.shell-card-grid .shell-card:nth-child(2) {
+  animation-delay: 0.22s;
+}
+.shell-card-grid .shell-card:nth-child(3) {
+  animation-delay: 0.29s;
+}
+.shell-card-grid .shell-card:nth-child(4) {
+  animation-delay: 0.36s;
+}
+.shell-card-grid .shell-card:nth-child(5) {
+  animation-delay: 0.43s;
+}
+
+.shell-card:hover {
+  border-color: var(--color-accent);
+  transform: scale(var(--scale-hover-md));
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--color-accent) 30%, transparent),
+    0 12px 32px color-mix(in srgb, var(--color-accent) 12%, transparent);
+}
+
+.shell-card:active {
+  transform: scale(var(--scale-press));
+}
+
+.shell-card__title {
+  margin: 0 0 0.4rem;
+  font-size: 1.15rem;
+  color: var(--color-text);
+  transition: color 0.15s ease;
+}
+
+.shell-card:hover .shell-card__title {
+  color: var(--color-accent);
+}
+
+.shell-card__desc {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.92rem;
+}
+
+/* —— 档案区 —— */
+.shell-section {
+  margin-bottom: 2.5rem;
+  animation: shell-reveal-up 0.9s var(--ease-reveal) both;
+}
+
+.shell-section:nth-of-type(1) {
+  animation-delay: 0.1s;
+}
+.shell-section:nth-of-type(2) {
+  animation-delay: 0.2s;
+}
+.shell-section:nth-of-type(3) {
+  animation-delay: 0.3s;
+}
+
+.shell-section__heading {
+  margin: 0 0 1rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+
+.shell-kv {
+  display: grid;
+  grid-template-columns: minmax(6rem, 8rem) 1fr;
+  gap: 0.65rem 1rem;
+  padding: 1.25rem;
+  border: 1px solid var(--color-border);
+  border-radius: 1.1rem;
+  background: var(--color-bg-elevated);
+  transition:
+    transform var(--dur-pop) var(--ease-pop),
+    border-color 0.15s ease;
+}
+
+.shell-kv:hover {
+  border-color: color-mix(in srgb, var(--color-accent) 45%, var(--color-border));
+  transform: scale(1.01);
+}
+
+.shell-kv dt {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.88rem;
+}
+
+.shell-kv dd {
+  margin: 0;
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.shell-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.shell-chips li {
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--color-accent) 35%, var(--color-border));
+  background: color-mix(in srgb, var(--color-accent) 8%, var(--color-surface));
+  color: var(--color-highlight);
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: transform var(--dur-pop) var(--ease-pop);
+}
+
+.shell-chips li:hover {
+  transform: scale(var(--scale-hover-md));
+}
+
+.shell-chips li:active {
+  transform: scale(var(--scale-press));
+}
+
+.shell-sns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.shell-sns a {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.55rem 1rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition:
+    border-color 0.15s ease,
+    color 0.15s ease,
+    transform var(--dur-pop) var(--ease-pop);
+}
+
+.shell-sns a:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+  transform: scale(var(--scale-hover-md));
+}
+
+.shell-sns a:active {
+  transform: scale(var(--scale-press));
+}
+
+/* —— 画廊：裁切盒内 zoom（对齐 gallery img scale 1.04） —— */
+.shell-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
+  gap: 0.85rem;
+}
+
+.shell-gallery__item {
+  aspect-ratio: 1;
+  border-radius: 1rem;
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+  position: relative;
+  background: var(--color-surface);
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    transform var(--dur-pop) var(--ease-pop),
+    box-shadow var(--dur-pop) var(--ease-pop);
+  animation: shell-reveal-up 0.8s var(--ease-reveal) both;
+}
+
+.shell-gallery__item:nth-child(1) {
+  animation-delay: 0.08s;
+}
+.shell-gallery__item:nth-child(2) {
+  animation-delay: 0.12s;
+}
+.shell-gallery__item:nth-child(3) {
+  animation-delay: 0.16s;
+}
+.shell-gallery__item:nth-child(4) {
+  animation-delay: 0.2s;
+}
+.shell-gallery__item:nth-child(5) {
+  animation-delay: 0.24s;
+}
+.shell-gallery__item:nth-child(6) {
+  animation-delay: 0.28s;
+}
+.shell-gallery__item:nth-child(7) {
+  animation-delay: 0.32s;
+}
+.shell-gallery__item:nth-child(8) {
+  animation-delay: 0.36s;
+}
+.shell-gallery__item:nth-child(9) {
+  animation-delay: 0.4s;
+}
+
+.shell-gallery__item:hover {
+  border-color: var(--color-accent);
+  box-shadow: 0 10px 28px color-mix(in srgb, var(--color-accent) 14%, transparent);
+}
+
+.shell-gallery__item:active {
+  transform: scale(var(--scale-press));
+}
+
+.shell-gallery__swatch {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  color: color-mix(in srgb, var(--color-text) 70%, transparent);
+  transition: transform var(--dur-pop) var(--ease-zoom);
+  will-change: transform;
+}
+
+.shell-gallery__item:hover .shell-gallery__swatch {
+  transform: scale(var(--scale-hover-img));
+}
+
+/* —— 表单 —— */
+.shell-form {
+  max-width: 28rem;
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  animation: shell-reveal-up 0.9s 0.15s var(--ease-reveal) both;
+}
+
+.shell-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.shell-field label {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  letter-spacing: 0.04em;
+}
+
+.shell-field input,
+.shell-field textarea {
+  width: 100%;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform var(--dur-pop) var(--ease-pop);
+}
+
+.shell-field input:hover,
+.shell-field textarea:hover {
+  border-color: color-mix(in srgb, var(--color-accent) 40%, var(--color-border));
+}
+
+.shell-field input:focus,
+.shell-field textarea:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: var(--focus-ring);
+  transform: scale(1.01);
+}
+
+.shell-field textarea {
+  min-height: 8rem;
+  resize: vertical;
+}
+
+.shell-submit {
+  align-self: center;
+  margin-top: 0.5rem;
+  padding: 0.75rem 1.75rem;
+  border: none;
+  border-radius: 999px;
+  background: var(--color-accent);
+  color: #041204;
+  font: inherit;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition:
+    transform var(--dur-pop) var(--ease-pop),
+    filter 0.15s ease,
+    box-shadow var(--dur-pop) var(--ease-pop);
+}
+
+.shell-submit:hover {
+  transform: scale(var(--scale-hover-md));
+  filter: brightness(1.06);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--color-accent) 35%, transparent);
+}
+
+.shell-submit:active {
+  transform: scale(var(--scale-press-hard));
+}
+
+.shell-form-note {
+  margin: 0.75rem 0 0;
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  min-height: 1.25rem;
+  transition:
+    color 0.2s ease,
+    transform var(--dur-pop) var(--ease-pop);
+}
+
+.shell-form-note.is-show {
+  color: var(--color-accent);
+  animation: shell-note-pop 0.45s var(--ease-pop);
+}
+
+@keyframes shell-note-pop {
+  0% {
+    transform: scale(0.92);
+    opacity: 0.4;
+  }
+  60% {
+    transform: scale(1.04);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* —— 首页 hero —— */
+.shell-hero {
+  text-align: center;
+  padding: 1rem 0 2.5rem;
+}
+
+.shell-hero__eyebrow {
+  margin: 0 0 0.75rem;
+  color: var(--color-accent);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  animation: shell-reveal-up 0.7s var(--ease-reveal) both;
+}
+
+.shell-hero__title {
+  margin: 0 0 1rem;
+  font-size: clamp(2.75rem, 10vw, 4.5rem);
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  line-height: 1.05;
+  background: linear-gradient(
+    180deg,
+    #fff 10%,
+    color-mix(in srgb, var(--color-accent) 70%, #fff) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 28px color-mix(in srgb, var(--color-accent) 28%, transparent));
+  animation: shell-title-settle 1.35s 0.08s var(--ease-reveal) both;
+}
+
+.shell-hero__lead {
+  margin: 0 auto 2rem;
+  max-width: 28rem;
+  color: var(--color-text-muted);
+  animation: shell-reveal-up 0.85s 0.2s var(--ease-reveal) both;
+}
+
+.shell-hero__glow {
+  position: absolute;
+  inset: 10% 10% auto;
+  height: 40vh;
+  max-height: 22rem;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at center,
+    color-mix(in srgb, var(--color-accent) 18%, transparent),
+    transparent 65%
+  );
+  filter: blur(8px);
+  animation: shell-glow-in 2.2s 0.15s var(--ease-reveal) both;
+}
+
+@media (max-width: 640px) {
+  .shell-sitename {
+    display: none;
+  }
+
+  .shell-main {
+    padding-top: 6.5rem;
+  }
+
+  .shell-kv {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+  }
+
+  .shell-kv dt {
+    margin-top: 0.5rem;
+  }
+
+  .shell-kv dt:first-child {
+    margin-top: 0;
+  }
+}
+
+/* 减少动态：尊重系统设置 */
+@media (prefers-reduced-motion: reduce) {
+  .shell-root *,
+  .shell-root *::before,
+  .shell-root *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

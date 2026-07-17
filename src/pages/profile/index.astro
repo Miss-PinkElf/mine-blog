@@ -1,0 +1,49 @@
+---
+import ShellLayout from '../../layouts/ShellLayout.astro';
+
+const base = import.meta.env.BASE_URL;
+---
+
+<ShellLayout title="Profile" description="無限凜 · Profile">
+  <h1 class="shell-page-title"><span>Profile</span></h1>
+  <p class="shell-lead">角色档案式信息块。部分文案为占位，可后续替换。</p>
+
+  <section class="shell-section" aria-labelledby="status-heading">
+    <h2 id="status-heading" class="shell-section__heading">Status</h2>
+    <dl class="shell-kv">
+      <dt>Name</dt>
+      <dd>無限凜 / Mugen Rin</dd>
+      <dt>Occupation</dt>
+      <dd>Developer · Site owner</dd>
+      <dt>Focus</dt>
+      <dd>静态博客 · 浏览器小工具</dd>
+      <dt>Stack</dt>
+      <dd>Astro · React islands · GitHub Pages</dd>
+      <dt>Accent</dt>
+      <dd>#39FF14</dd>
+    </dl>
+  </section>
+
+  <section class="shell-section" aria-labelledby="likes-heading">
+    <h2 id="likes-heading" class="shell-section__heading">Likes</h2>
+    <ul class="shell-chips">
+      <li>Clean dark UI</li>
+      <li>Neon accents</li>
+      <li>SSG</li>
+      <li>Tiny tools</li>
+      <li>Readable CN prose</li>
+    </ul>
+  </section>
+
+  <section class="shell-section" aria-labelledby="sns-heading">
+    <h2 id="sns-heading" class="shell-section__heading">Official SNS</h2>
+    <ul class="shell-sns">
+      <li>
+        <a href="https://github.com/Miss-PinkElf/mine-blog" target="_blank" rel="noopener noreferrer">GitHub</a>
+      </li>
+      <li><a href={base}>Site</a></li>
+      <li><a href={`${base}blog/`}>Blog</a></li>
+      <li><a href={`${base}tools/`}>Tools</a></li>
+    </ul>
+  </section>
+</ShellLayout>

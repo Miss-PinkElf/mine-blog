@@ -1,0 +1,30 @@
+---
+const base = import.meta.env.BASE_URL;
+const year = new Date().getFullYear();
+
+const links = [
+  { label: 'Home', href: base },
+  { label: 'Profile', href: `${base}profile/` },
+  { label: 'Gallery', href: `${base}gallery/` },
+  { label: 'Contact', href: `${base}contact/` },
+  { label: 'Blog', href: `${base}blog/` },
+  { label: 'Tools', href: `${base}tools/` },
+  { label: 'Classic', href: `${base}classic/` },
+];
+---
+
+<footer class="shell-footer">
+  <div class="shell-footer__inner">
+    <p class="shell-footer__brand">無限凜</p>
+    <ul class="shell-footer__nav">
+      {
+        links.map((link) => (
+          <li>
+            <a href={link.href}>{link.label}</a>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="shell-footer__copy">© {year} Mugen Rin</p>
+  </div>
+</footer>

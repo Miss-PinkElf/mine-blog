@@ -1,0 +1,124 @@
+---
+const base = import.meta.env.BASE_URL;
+const pathname = Astro.url.pathname;
+
+/** 主站壳导航：内容站（blog/tools）与壳页共用同一套 URL */
+const navItems = [
+  { label: 'HOME', href: base },
+  { label: 'PROFILE', href: `${base}profile/` },
+  { label: 'GALLERY', href: `${base}gallery/` },
+  { label: 'CONTACT', href: `${base}contact/` },
+  { label: 'BLOG', href: `${base}blog/` },
+  { label: 'TOOLS', href: `${base}tools/` },
+  { label: 'CLASSIC', href: `${base}classic/` },
+];
+
+function isActive(href: string): boolean {
+  const normalizedPath = pathname.endsWith('/') ? pathname : `${pathname}/`;
+  const normalizedHref = href.endsWith('/') ? href : `${href}/`;
+
+  if (normalizedHref === base || normalizedHref === `${base}`) {
+    return normalizedPath === base || normalizedPath === '/';
+  }
+
+  return normalizedPath === normalizedHref || normalizedPath.startsWith(normalizedHref);
+}
+---
+
+<div class="shell-badge-bar">
+  <a class="shell-back" href={`${base}classic/`}>极简入口 →</a>
+</div>
+
+<p class="shell-sitename" aria-hidden="true">MUGEN RIN / 無限凜</p>
+
+<button
+  type="button"
+  class="shell-menu-btn closed"
+  id="shell-menu-btn"
+  aria-label="打开菜单"
+  aria-expanded="false"
+  aria-controls="shell-header-nav"
+>
+  <span class="shell-menu-btn__blob" aria-hidden="true"></span>
+  <span class="shell-menu-btn__lines" aria-hidden="true">
+    <span class="line"></span>
+    <span class="line"></span>
+  </span>
+</button>
+
+<div class="shell-header-bg closed" id="shell-header-bg" aria-hidden="true">
+  <div class="shell-header-bg__glow"></div>
+  <div class="shell-header-bg__grid"></div>
+</div>
+
+<nav class="shell-header-nav closed" id="shell-header-nav" aria-label="主站菜单" aria-hidden="true">
+  <div class="shell-header-nav__inner">
+    <p class="shell-header-nav__label">Menu</p>
+    <ul class="shell-header-nav__list">
+      {
+        navItems.map((item) => (
+          <li>
+            <a
+              class:list={['shell-header-nav__link', { 'is-active': isActive(item.href) }]}
+              href={item.href}
+              aria-current={isActive(item.href) ? 'page' : undefined}
+            >
+              {item.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="shell-header-nav__meta">
+      右上角开关菜单 · 不换 URL<br />
+      博客与工具为共用内容路由 · CLASSIC 为极简入口
+    </p>
+  </div>
+</nav>
+
+<script>
+  const btn = document.getElementById('shell-menu-btn');
+  const bg = document.getElementById('shell-header-bg');
+  const nav = document.getElementById('shell-header-nav');
+  const nodes = [btn, bg, nav].filter(Boolean);
+
+  let isOpen = false;
+
+  function setMenuOpen(next) {
+    if (!btn || !bg || !nav) return;
+
+    for (const el of nodes) {
+      if (!el) continue;
+      if (next) {
+        el.classList.remove('closed');
+        el.classList.add('opened');
+      } else {
+        el.classList.remove('opened');
+        el.classList.add('closed');
+      }
+    }
+
+    document.body.classList.toggle('shell-menu-open', next);
+    btn.setAttribute('aria-expanded', next ? 'true' : 'false');
+    btn.setAttribute('aria-label', next ? '关闭菜单' : '打开菜单');
+    nav.setAttribute('aria-hidden', next ? 'false' : 'true');
+    bg.setAttribute('aria-hidden', next ? 'false' : 'true');
+    isOpen = next;
+  }
+
+  btn?.addEventListener('click', () => {
+    if (isOpen) {
+      setMenuOpen(false);
+    } else {
+      setTimeout(() => setMenuOpen(true), 0);
+    }
+  });
+
+  bg?.addEventListener('click', () => {
+    if (isOpen) setMenuOpen(false);
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && isOpen) setMenuOpen(false);
+  });
+</script>

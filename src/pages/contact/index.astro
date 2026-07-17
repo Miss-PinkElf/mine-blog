@@ -1,0 +1,38 @@
+---
+import ShellLayout from '../../layouts/ShellLayout.astro';
+---
+
+<ShellLayout title="Contact" description="無限凜 · Contact">
+  <h1 class="shell-page-title"><span>Contact</span></h1>
+  <p class="shell-lead">表单仅为 UI，提交不会发送任何内容（后续可接真实通道）。</p>
+
+  <form class="shell-form" id="shell-contact-form" novalidate>
+    <div class="shell-field">
+      <label for="shell-name">Name</label>
+      <input id="shell-name" name="name" type="text" autocomplete="name" placeholder="你的名字" />
+    </div>
+    <div class="shell-field">
+      <label for="shell-email">Email</label>
+      <input id="shell-email" name="email" type="email" autocomplete="email" placeholder="you@example.com" />
+    </div>
+    <div class="shell-field">
+      <label for="shell-message">Message</label>
+      <textarea id="shell-message" name="message" placeholder="想说的话…"></textarea>
+    </div>
+    <button class="shell-submit" type="submit">Send</button>
+    <p class="shell-form-note" id="shell-form-note" role="status" aria-live="polite"></p>
+  </form>
+</ShellLayout>
+
+<script>
+  const form = document.getElementById('shell-contact-form');
+  const note = document.getElementById('shell-form-note');
+
+  form?.addEventListener('submit', (event) => {
+    event.preventDefault();
+    if (note) {
+      note.textContent = '尚未接入发送通道：内容仅留在本地。';
+      note.classList.add('is-show');
+    }
+  });
+</script>

@@ -1,16 +1,9 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ToolCard from '../../components/site/ToolCard.astro';
+import { tools } from '../../data/tools';
 
 const base = import.meta.env.BASE_URL;
-
-const tools = [
-  {
-    slug: 'json',
-    title: 'JSON 格式化',
-    description: '格式化、压缩与语法校验，数据仅在浏览器内处理',
-  },
-] as const;
 ---
 
 <BaseLayout title="工具" description="無限凜浏览器内小工具集合">

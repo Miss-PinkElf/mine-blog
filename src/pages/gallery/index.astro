@@ -1,0 +1,30 @@
+---
+import ShellLayout from '../../layouts/ShellLayout.astro';
+
+const items = [
+  { label: 'RIN-01', tone: 'linear-gradient(145deg, #0a0a0a, #1a3d12 55%, #39ff14)' },
+  { label: 'RIN-02', tone: 'linear-gradient(145deg, #000, #1a1a1a 40%, #50c878)' },
+  { label: 'RIN-03', tone: 'radial-gradient(circle at 30% 30%, #adff2f55, #0a0a0a 70%)' },
+  { label: 'RIN-04', tone: 'linear-gradient(160deg, #0a0a0a, #39ff1422, #1a1a1a)' },
+  { label: 'RIN-05', tone: 'repeating-linear-gradient(45deg, #1a1a1a, #1a1a1a 8px, #0a0a0a 8px, #0a0a0a 16px)' },
+  { label: 'RIN-06', tone: 'linear-gradient(120deg, #000 30%, #00ff0033, #000)' },
+  { label: 'RIN-07', tone: 'radial-gradient(circle at 70% 80%, #39ff1433, #000 60%)' },
+  { label: 'RIN-08', tone: 'linear-gradient(200deg, #1a1a1a, #40404044, #39ff1428)' },
+  { label: 'RIN-09', tone: 'conic-gradient(from 200deg, #0a0a0a, #39ff1440, #0a0a0a)' },
+];
+---
+
+<ShellLayout title="Gallery" description="無限凜 · Gallery">
+  <h1 class="shell-page-title"><span>Gallery</span></h1>
+  <p class="shell-lead">占位色块网格。后续可换成真实插画 / 生成图。</p>
+
+  <div class="shell-gallery" role="list">
+    {
+      items.map((item) => (
+        <div class="shell-gallery__item" role="listitem" title={item.label}>
+          <div class="shell-gallery__swatch" style={`background: ${item.tone}`}>{item.label}</div>
+        </div>
+      ))
+    }
+  </div>
+</ShellLayout>
