@@ -37,6 +37,14 @@
 - **方案**：默认 `CURL_MAX_TIME=180`，可用 `.env` 覆盖
 - **状态**：已调整
 
+## BUG-006 · 多参考图 data URL 大 body 易断连（曾误判为「多图协议不稳」）
+
+- **现象**：双 `-i` 时常见 `Remote end closed connection without response`（约 60s），重试后可能 200
+- **原因**：本地图 base64 data URL 使请求体达数百 KB；网关/上游断连。**不是** 4xx 拒绝多 `image_url`
+- **证据**：HTTPS 双 `image_url` body≈526B 一次 200；data URL 双图 body≈254KB 易断连
+- **方案（当前）**：`--prep heavy` / 降 `--target-bytes` / 重试；下轮可选 URL 直通或更强 body 策略
+- **状态**：已定性；实现优化待 T7 同批或后续
+
 ## NOTE · 密钥与历史
 
 - 用户核查 key `sk-C2h0…`：**未进入 git 历史**；仅本机 ignore 文件

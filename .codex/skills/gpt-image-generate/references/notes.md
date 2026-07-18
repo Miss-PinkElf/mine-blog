@@ -16,9 +16,12 @@
 
 ## 接口（Chat Completions）
 
+官方教程：https://team.wyzlab.ai/tutorial/gpt-image
+
 ### 端点
 
-- `POST {OPENAI_BASE_URL}/chat/completions`
+- 主路径：`POST {OPENAI_BASE_URL}/chat/completions`（Agent / 图文混合）
+- 可选对照：`POST {OPENAI_BASE_URL}/images/generations`（纯画图，官方 Images 字段）
 - **不使用** `POST .../responses` 与 `tools: image_generation`
 
 ### 纯文生图
@@ -31,7 +34,43 @@
 }
 ```
 
-### 多图参考
+不带 `metadata` 时默认：size=auto / quality=auto / background=auto / format=png。
+
+### 尺寸 / 质量（官方 metadata · T7 写入点）
+
+Chat 路径用**顶层** `metadata.image_*`（非 tools）：
+
+```json
+{
+  "model": "gpt-image-2",
+  "stream": false,
+  "messages": [{ "role": "user", "content": "提示词" }],
+  "metadata": {
+    "image_size": "1024x1024",
+    "image_quality": "high",
+    "image_background": "auto",
+    "image_output_format": "png",
+    "image_moderation": "auto",
+    "image_input_fidelity": "high",
+    "image_partial_images": 0
+  }
+}
+```
+
+| 键 | 合法值 | 默认 |
+| --- | --- | --- |
+| `image_size` | `1024x1024` / `1536x1024` / `1024x1536` / `auto` | auto |
+| `image_quality` | `low` / `medium` / `high` / `auto` | auto |
+| `image_background` | `opaque` / `transparent` / `auto` | auto |
+| `image_output_format` | `png` / `jpeg` / `webp` | png |
+| `image_output_compression` | 0–100（仅 jpeg/webp） | — |
+| `image_moderation` | `auto` / `low` | auto |
+| `image_input_fidelity` | `low` / `high`（图生图） | low |
+| `image_partial_images` | 0–3（流式） | 0 |
+
+注意：请求 `1024x1024` 时实测输出可能是约 **1254×1254**；`1024x1536` 可精确。
+
+### 单图 / 多图参考
 
 ```json
 {
@@ -46,9 +85,15 @@
         { "type": "image_url", "image_url": { "url": "data:image/jpeg;base64,..." } }
       ]
     }
-  ]
+  ],
+  "metadata": {
+    "image_input_fidelity": "high",
+    "image_quality": "high"
+  }
 }
 ```
+
+官方示例为单 `image_url`；多 `image_url` 已实测可用。提示词写清图1/图2职责。
 
 ### 响应图片
 
@@ -56,6 +101,7 @@
 2. data URL / 裸 base64 → 解码  
 3. content 数组 `image_url`  
 4. 兼容 `data[0].b64_json` 等  
+5. 响应 `model` 常为 `gpt-5.4`（画图别名），请求仍写 `gpt-image-2`  
 
 ## 输入预处理（image_prep）
 

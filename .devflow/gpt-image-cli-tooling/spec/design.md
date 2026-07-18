@@ -81,19 +81,25 @@ CLI 提示词 / prompts/prompt-image.md
 3. skill 同级 `.env`
 4. 脚本默认值（model=`gpt-image-2`，base=`https://shell.wyzlab.ai/v1`）
 
-## 尺寸与比例设计（T7 · 待实现 · Chat 适配）
+## 尺寸与比例设计（T7 · 待实现 · 官方 metadata）
 
-- Chat 路径**没有**稳定的 `tools[0].size` 写入点
-- 第一版建议优先：
-  1. 将 ratio/size 写进用户提示词前缀（兼容性最好）
-  2. 或探测中转是否接受顶层/扩展字段（需实测）
-- 映射表（若最终落到 size 字符串）：
+> 2026-07-18 官方教程 + 探针已确认，**取代**「仅提示词前缀 / tools[0]」旧设想。
 
-| ratio | size |
+- **写入点**：Chat 请求顶层 `metadata`：
+  - `image_size`：`1024x1024` | `1536x1024` | `1024x1536` | `auto`
+  - `image_quality`：`low` | `medium` | `high` | `auto`
+- **不要**写 Responses `tools[0].size`
+- **第一版 CLI 映射**：
+
+| ratio | image_size |
 | --- | --- |
 | `1:1` | `1024x1024` |
 | `2:3` | `1024x1536` |
 | `3:2` | `1536x1024` |
+
+- **实测注意**：请求 `1024x1024` 时输出像素可能约 **1254×1254**；`1024x1536` 可精确
+- **图生图（相关，可 T7 同批或紧随）**：`metadata.image_input_fidelity` = `low` | `high`（官方示例 high）
+- **第一版不做**：background / output_format / moderation / partial_images 的完整 CLI（见 backlog）
 
 ## 可靠性
 

@@ -10,57 +10,56 @@
 
 1. `.devflow/gpt-image-cli-tooling/state.md`
 2. `.devflow/gpt-image-cli-tooling/checkpoints.md`
-3. 交接：`.devflow/gpt-image-cli-tooling/handoffs/2026-07-18-001-python-node-cross-platform-close.md`
-4. 实施前：`spec/tasks.md`（T7/T8）+ 需要时 `spec/design.md`
+3. 交接：`.devflow/gpt-image-cli-tooling/handoffs/2026-07-18-002-official-docs-explore-close.md`
+4. 需要时：`learnings.md`（2026-07-18 续）+ `spec/tasks.md`（T7/T8）
 
-完整过程再读 `development-overview.md`；延期见 `deferred/` 与 `backlog.md`。
+实现基线可补读：`handoffs/2026-07-18-001-python-node-cross-platform-close.md`
 
 ## 当前进度（摘要）
 
 ### 已完成
 
-- 第一～三版：文生图、图文、Chat Completions、双目录
-- **第四版（2026-07-18）**：
-  - 主入口 **`run.py`**，兜底 **`run.mjs`**，`run.cmd` / `run`
-  - 多图 `-i`（可重复）、输入 `--prep`（默认不固定长边）
-  - **双图实测成功**：`zzz-prompt-debug/origin/OC/generated/rin-dual-test-01.png`
-  - 断连靠重试 + 压 body；**不是**协议不支持双图
+- 第一～四版：文生图、图文、Chat 协议、Python/Node 跨平台、多 `-i`、`--prep`
+- **2026-07-18 晚 Explore（未改 run.py 业务）**：
+  - 官方教程：https://team.wyzlab.ai/tutorial/gpt-image
+  - T7 正确写入点：Chat 顶层 **`metadata.image_*`**
+  - 图生图官方：`image_url`（示范为 **https URL**）+ **`image_input_fidelity: high`**
+  - **多图根因**：不稳 ≈ **data URL 大 body 断连**；HTTPS 双参考 body≈526B 一次 200
+  - 多 `image_url` 实测可用，但**官方只示范单参考**，勿写成文档主路径
 
-### 未完成（下轮优先，非延期）
+### 未完成（下轮优先）
 
-#### T7 · 尺寸 / 比例 / 质量（第一版即可）
+#### T7 · 尺寸 / 比例 / 质量（第一版）
 
-- CLI/env：`--size`、`--quality`、`--ratio`
-- **必须按 Chat 协议设计**，不要写 Responses `tools[0]`
-- 先讨论再 plan/apply；至少验证 1:1 与 2:3
+- CLI/env：`--size`、`--quality`、`--ratio` → `metadata.image_size` / `image_quality`
+- 先 Align 再 plan/apply；至少验证 1:1 与 2:3
+- 注意：`1024x1024` 实测像素可能约 1254 边长
+
+#### 建议与 T7 同批讨论（可选）
+
+- `--fidelity` → `image_input_fidelity`
+- http(s) `image_url` 直通（不二次 base64）
+- 本地大图 / 多图 body 策略（prep 或先上传换 URL）
 
 #### T8 · Verify 补强
 
 - 无 key、空 prompt、成功出图、Ctrl+C 抽检
 
-### 可选
+### 明确延期
 
-- notes 体积/断连对照表
-- 多图默认建议 heavy 写进 SKILL 更醒目
-
-### 明确延期（不要本轮偷做）
-
-- 异步 task → `deferred/async-image-jobs.md`
-- 站点 UI → `deferred/web-ui-image-gen.md`
-- 仅 aspect_ratio → `deferred/aspect-ratio-only.md`
-- **内嵌运行时 / 输出体积治理** → `deferred/no-bundled-runtime-and-output-size.md`
-- 仓库 scripts 迁 Chat / 废弃双轨 → backlog
+- 异步 task、站点 UI、仅 aspect_ratio、内嵌运行时/输出体积治理 → `deferred/`
+- **本地大图先上传再 URL** → `deferred/local-upload-then-url.md`
+- metadata 全量 CLI（background/format/moderation/partial）→ backlog（T7 第一版不做）
+- 仓库 scripts 迁 Chat → backlog
 
 ## 注意
 
 - 始终简体中文；相对路径
-- 不要提交 `.env`、key、skill 内 `gen-images/`
+- 不要提交 `.env`、key、skill 内 `gen-images/`、`_probe_out/` 大图
 - 改 skill 后同步 **`.claude` → `.codex`**
-- 多图/大参考图：优先 `--prep heavy` 控 body
-- 响应 `model` 可能是 `gpt-5.4`，请求仍可写 `gpt-image-2`
+- 多图/大本地图：优先控 body；不要再假设「多图协议不可用」
 - 默认：`python .claude/skills/gpt-image-generate/run.py ...`
 
 ## 建议第一步
 
-若做 T7：先对齐 Chat 下 size/ratio 写入策略（提示词 vs 扩展字段），再写 plan 后 Apply。  
-若只验证稳定性：补 T8 失败路径证据即可。
+做 T7：先 Align CLI→metadata 映射与是否同批带 fidelity/URL 直通，确认后写 plan 再 Apply。

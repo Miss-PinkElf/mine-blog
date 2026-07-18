@@ -38,13 +38,18 @@
 - [x] proposal / design / tasks 三件套
 - [x] 本轮代码与文档提交（`35046b2`）
 
-## T7 · 尺寸 / 比例 / 质量（下一轮 Apply · 第一版即可）
+## T7 · 尺寸 / 比例 / 质量（下一轮 · 第一版即可）
 
-- [ ] CLI：`--size`、`--quality`、`--ratio`
-- [ ] `.env`：`OPENAI_IMAGE_SIZE` / `OPENAI_IMAGE_QUALITY` / `OPENAI_IMAGE_RATIO`
-- [ ] **按 Chat 协议设计写入方式**（不可再写 Responses `tools[0]`；可选：提示词前缀约定 / 网关扩展字段）
-- [ ] help 与 plan 对齐说明
-- [ ] 真实调用验证至少 1:1 与 2:3 各一次
+> 2026-07-18 Explore 已对齐官方：写入 **`metadata.image_size` / `image_quality`**（非 tools、非仅靠提示词）。
+
+- [ ] Align + Plan 落盘后再 Apply
+- [ ] CLI：`--size`、`--quality`、`--ratio` → 请求体 `metadata.image_*`
+- [ ] `.env`：`OPENAI_IMAGE_SIZE` / `OPENAI_IMAGE_QUALITY` / `OPENAI_IMAGE_RATIO`（或等价命名）
+- [ ] **禁止** Responses `tools[0].size`
+- [ ] help / SKILL / notes 说明合法值与 1:1→1024x1024 等映射
+- [ ] 真实调用验证至少 1:1 与 2:3 各一次（记录实际像素可能非严格 1024）
+- [ ] （可选同批）`--fidelity` → `image_input_fidelity`
+- [ ] （可选同批）`-i` 支持 http(s) URL 直通
 ## T8 · Verify
 
 - [ ] 无 key 失败路径

@@ -1,5 +1,16 @@
 # Decision Log · 决策记录
 
+## 2026-07-18 晚 · 官方教程对齐（Explore，未改实现）
+
+- **决策/结论**：
+  1. T7 第一版写入点定为 Chat 顶层 **`metadata.image_*`**（`image_size` / `image_quality` 等），**不用** Responses `tools[0]`，也不再以「只写提示词前缀」为主方案
+  2. 图生图应对齐官方：`image_input_fidelity`（推荐 high）；参考图示范为 **https URL**
+  3. 多 `image_url`：实测可用，但**官方教程只示范单参考**；对外文档勿写成官方主路径
+  4. 「多图不稳」归因纠正为 **data URL 大 body 断连**，不是协议拒绝多图（HTTPS 双参考 body≈526B 一次 200）
+  5. 本轮只 Explore + 记录，**不改** `run.py` 组包；实现放 T7 Align→Plan 后
+- **证据**：team.wyzlab.ai 教程（参数矩阵/场景/FAQ）；`_probe_out/` 探针
+- **状态**：已记录；待 T7 实现
+
 ## 2026-07-18 · Python 主入口 + Node 完整兜底（跨平台）
 
 - **决策**：

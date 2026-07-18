@@ -38,6 +38,8 @@
 | 23 | 参考图：`zzz-prompt-debug/origin/OC/generated/rin-01-global-design.png` | 2026-07-17 | 真实 OC 图生图验证 | 已验证通过 |
 | 24 | 对话：上下文过长，收尾 + commit + handoff（本轮） | 2026-07-17 | Close 第三版 | 本轮 |
 | 25 | 对话：Win 上 sh 难跑；写 py；Node 作兜底 | 2026-07-18 | 跨平台入口 | 已吸收 run.py/run.mjs |
+| 26 | 官方教程：https://team.wyzlab.ai/tutorial/gpt-image | 2026-07-18 | Chat metadata.image_* / Images API / 场景与 FAQ | 已写入 learnings |
+| 27 | 对话：恢复上下文 + 深度读文档 + 文生/图生/多参考实测 | 2026-07-18 | Explore 对齐接口 | 本轮 |
 | 26 | 文件：`zzz-prompt-debug/origin/优化生成图片脚本/prompt-2.md` | 2026-07-18 | 成功率/多图/py 压缩需求 | 已吸收 plan+实现 |
 | 27 | 对话：输入压缩不固定长边；Agent 用 `--prep` 判断 | 2026-07-18 | 压缩哲学 | 已吸收 |
 | 28 | 对话：双图是否可行；探针 + `run.py` 落盘 | 2026-07-18 | 双图验证 | 已验证通过 |

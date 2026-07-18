@@ -76,4 +76,35 @@
 ### 产物
 
 - Skill：`.claude/skills/gpt-image-generate/`（同步 `.codex/...`）
-- 最新 handoff：`handoffs/2026-07-17-001-chat-protocol-session-close.md`
+- 最新 handoff（当时）：`handoffs/2026-07-17-001-chat-protocol-session-close.md`
+
+## 2026-07-18 增量（第四版 · 跨平台）
+
+### 目标
+
+Win/Mac 可跑：Python 主入口 + Node 兜底；多参考图；输入可压。
+
+### 过程摘要
+
+1. `run.py` / `run.mjs` / 启动器；`--prep`；多 `-i`
+2. 双图实测落盘；断连靠重试 + 压 body
+3. 明确不做：内嵌运行时、输出体积治理
+
+## 2026-07-18 晚 增量（官方文档 Explore · 无代码业务改动）
+
+### 目标
+
+读透 https://team.wyzlab.ai/tutorial/gpt-image，纠正 T7 与多图理解。
+
+### 关键结论
+
+1. T7 → `metadata.image_size` / `image_quality`（已探针）
+2. 图生图官方：`image_input_fidelity` + 示范 https `image_url`
+3. 多图不稳 ≈ data URL 大 body，≠ 协议拒绝
+4. Images API 可选纯画图路径；skill 仍走 Chat
+
+### 产物
+
+- handoff：`handoffs/2026-07-18-002-official-docs-explore-close.md`
+- notes / learnings / design T7 段更新
+- 探针目录 `_probe_out/`（本地，默认不提交）

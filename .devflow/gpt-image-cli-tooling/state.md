@@ -1,25 +1,17 @@
 # State · gpt-image-cli-tooling
 
-- **阶段**：Close / Handoff（2026-07-18 · 第四版跨平台脚本）
+- **阶段**：Close / Handoff（2026-07-18 晚 · 官方文档 Explore 收尾）
 - **路径**：Heavy
-- **本轮已交付（第四版）**：
-  - 主入口 **Python `run.py`**；Node **`run.mjs` 完整兜底**；`run.cmd` / `run` 启动器；`run.sh` 薄封装
-  - 多参考图：可重复 `-i/--image`（上限 4）
-  - 输入压缩：`--prep off|light|medium|heavy`（质量优先编码，**默认不固定长边**）；Pillow 可选
-  - 去 jq 主依赖；**输出 png 不做体积治理**（第一版明确不做）
-  - Plan：`plans/2026-07-18-python-node-cross-platform-plan.md`
-  - 双目录同步：`.claude/skills/gpt-image-generate/` → `.codex/...`
-- **Verify（2026-07-18）**：
-  - prep：大 PNG medium 压体积且默认不缩边
-  - 文生图 / 单图图生图 HTTP 200
-  - **双图实测成功并落盘**：`zzz-prompt-debug/origin/OC/generated/rin-dual-test-01.png`（人设+风格，`--prep heavy`，body~101KB；前两次断连、第三次 200）
-  - 中转响应 `model` 常显示 `gpt-5.4`（请求仍写 `gpt-image-2`）
-  - 偶发 `Remote end closed connection without response`（~60s），重试可恢复；**非**双图协议 4xx
-- **下轮优先（未延期）**：
-  - T7 size/ratio/quality（Chat 适配第一版即可）
-  - T8 失败路径抽检
-  - 可选：notes 体积探针表、多图默认 heavy 策略写进 SKILL
-- **明确延期 / 第一版不做**：见 `deferred/` 与 backlog；内嵌 Python 运行时、输出体积治理、自动下载解释器
+- **本轮（Explore，未改 run.py 业务）**：
+  - 官方教程全 tab 对齐（Chat `metadata.image_*` / Images API / 图生图 fidelity）
+  - 文生图、单图、双图 skill 实测；HTTPS 双参考一次成功
+  - **多图根因纠正**：不稳 ≈ data URL 大 body 断连，≠ 协议不支持多 `image_url`
+- **实现基线仍有效（handoff 004）**：`run.py` / `run.mjs` / 多 `-i` / `--prep`
+- **下轮优先（第一版即可）**：
+  1. T7 Align→Plan→Apply：`--size/--ratio/--quality` → `metadata.image_*`
+  2. T8 失败路径抽检
+- **可选同批**：`--fidelity`、http(s) URL 直通、多图 body 策略写 SKILL
+- **明确延期（本轮补充）**：`deferred/local-upload-then-url.md`；metadata 全量 CLI 进 backlog
 - **阻塞**：无
-- **最新 handoff**：`handoffs/2026-07-18-001-python-node-cross-platform-close.md`
+- **最新 handoff**：`handoffs/2026-07-18-002-official-docs-explore-close.md`
 - **下次入口**：`NEXT-SESSION-PROMPT-gpt-image-cli-tooling.md`
