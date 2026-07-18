@@ -6,39 +6,37 @@
 
 ## 当前阶段
 
-**Close / Handoff（2026-07-17 · prompt-2 第一版）** → 下轮从 **质量重抽 / 可选补图 / 细验收** 恢复
+**Close / Handoff（2026-07-18 · Grok 会话）** → 下轮从 **用户定稿方向 / 可选重抽 / 延期项择一** 恢复
 
 ## 目标
 
 产出可复用的「无限凛」人设设定图 + 日常切片/表情包（设定图驱动，对齐 cat-oc-design）。
 
-## 第一版范围（已落地）
+## 当前交付视图
 
-| 类型 | 产物 | 状态 |
+| 类型 | 产物位置 | 状态 |
 | --- | --- | --- |
-| 全局设定 | `generated/rin-01-global-design.png` | 完成 |
-| 角度/表情 | `generated/rin-02-angles-expressions.png` | 完成 |
-| 动作 | `generated/rin-03-actions.png` | 完成 |
-| 场景（JK/机房） | `generated/rin-04-jk-server-room.png` | 完成 |
-| 场景（宅家直播设定） | rin-05 | **延期** |
-| 风格参考本地 | `ref-style/` ×10 | 完成 |
-| 日常切片 ×3 | `rin-daily-01/02/03` | 完成（第一版；用户观感一般） |
-| 表情包 | `rin-stickers-01-line-pack.png` | 完成（第一版） |
+| 设定图 01–04 | `generated/rin-01`～`04`.png | **第一版可用**（gpt-image-2） |
+| 日常 + 表情包 | `generated/rin-daily-*` / stickers | **第一版**（观感一般，暂接受） |
+| 风格参考 | `ref-style/` ×10 | 完成 |
+| Grok 试做全套 | `grok-images/*-v2-grok.jpg` | **质量一般，暂时不管** |
+| 设定图级宅家 05 | — | **延期** |
+| 更密全套 / 公开相册 | `deferred/` | **延期** |
 
 ## 方法要点
 
-1. 先本地参考图 + HTML 方法，再出图
-2. 模型固定 `gpt-image-2`；skill：`.claude/skills/gpt-image-generate/run.sh`（或 `.codex` 同步）
-3. 大设定图 `image_edit` 易 524；日常可用 **文生图 + 角色锚点写进 prompt**
-4. 单次建议 `--retries 0` + `CURL_MAX_TIME=300`；失败简化 prompt 另起一轮
-5. 风格参考用于画风/构图气质，**不改角色设计**
+1. cat-oc-design：先设定图，再衍生；每次锚回原始设定图
+2. 历史主路径：`gpt-image-2` + skill 中转（易 524）
+3. 本会话试路径：**Grok Imagine** `image_edit`（角色锚 + 可选画风锚）；清晰度一般
+4. Grok 产物单独放 `grok-images/`，与 `generated/` 主线第一版隔离
+5. 风格参考只借画风/动作，不改人设
 
 ## 里程碑
 
 | 里程碑 | 状态 |
 | --- | --- |
 | 素材与方法理解 | 完成 |
-| 设定图套件 01–04 | 完成 |
-| prompt-2 日常 + 表情包第一版 | 完成 |
-| 宅家场景 05 / 质量重抽 | 延期/可选 |
-| 本会话 Close/Handoff + commit | 完成 |
+| 设定图套件 01–04（gpt-image） | 完成（第一版） |
+| prompt-2 日常 + 表情包（gpt-image） | 完成（第一版） |
+| Grok 设定图 + 日常试做 | 完成试做；**不定稿** |
+| 宅家设定 05 / 清晰重抽 / 相册 | 延期或可选 |

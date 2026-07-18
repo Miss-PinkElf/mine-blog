@@ -22,12 +22,35 @@
 - [x] T13 提交本 mission 相关产物与文档（不含无关 skill / cli-worker）
 - [x] T14 handoff 003 + NEXT-SESSION-PROMPT
 
+## prompt-2 v2 重抽（2026-07-18 · Grok Imagine）
+
+- [x] T15 按用户反馈重抽日常/表情包（Grok `image_edit`，`*-v2-grok.jpg`）
+- [x] T16 真·直播构图替换 daily-03 简化版（v2 live-stream 含麦/补光/手柄/多屏）
+- [x] T17 目视验收 v2 身份锚点（异色瞳 / 西装 JK / 直播场景）
+
+## prompt-1 设定图 v2（2026-07-18 · Grok Imagine）
+
+- [x] T20 全局设定图 rin-01-v2-grok（char-02 + chocho-1 布局）
+- [x] T21 角度/表情 rin-02-v2-grok
+- [x] T22 动作 rin-03-v2-grok
+- [x] T23 场景单图 rin-04-v2-grok（JK 机房）
+- [x] T24 场景六宫格 rin-05-scene-sheet-v2-grok（对齐 chocho-5）
+- [x] T25 目视验收设定图套件并落盘
+
+## 收尾（2026-07-18 Grok 会话）
+
+- [x] T27 Grok 产物迁入 `zzz-prompt-debug/origin/OC/grok-images/`
+- [x] T28 用户判定 Grok 质量一般 → **不定稿 / 暂时不管**
+- [x] T29 Close handoff 005 + 更新 state/workflow/origin/overview
+- [x] T30 commit 本 mission 相关路径
+
 ## 可选 / 后续
 
-- [ ] T8 宅家直播 rin-05（延期，见 `deferred/home-stream-scene-rin-05.md`）
-- [ ] T4 目视验收 01–04 并必要时重抽
-- [ ] T15 按用户反馈重抽日常/表情包（第一版观感一般）
-- [ ] T16 真·直播构图替换 daily-03 简化版（可选）
+- [ ] T4 目视验收 gpt-image 01–04 并决定是否再修
+- [ ] T18 Grok 是否定稿 → **已否决本轮**；若再开需用户新指令
+- [ ] T26 强化异色瞳 / 清晰度重抽（未承诺）
+
+
 
 ## 明确延期
 
