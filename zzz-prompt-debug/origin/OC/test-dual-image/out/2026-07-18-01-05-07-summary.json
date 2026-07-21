@@ -1,0 +1,31 @@
+{
+  "stamp": "2026-07-18-01-05-07",
+  "base_url": "https://shell.wyzlab.ai/v1",
+  "model": "gpt-image-2",
+  "char": "D:\\Users\\Mobius\\Desktop\\mine\\AAA-code\\mine-blog\\zzz-prompt-debug\\origin\\OC\\generated\\rin-01-global-design.png",
+  "style": "D:\\Users\\Mobius\\Desktop\\mine\\AAA-code\\mine-blog\\zzz-prompt-debug\\origin\\OC\\ref-style\\style-05.jpg",
+  "results": [
+    {
+      "protocol": "chat",
+      "http_status": 0,
+      "elapsed_sec": 66.72,
+      "response_bytes": 45,
+      "raw_json": "D:\\Users\\Mobius\\Desktop\\mine\\AAA-code\\mine-blog\\zzz-prompt-debug\\origin\\OC\\test-dual-image\\out\\2026-07-18-01-05-07-chat.raw.json",
+      "output_png": null,
+      "ok": false,
+      "error": "HTTP 0",
+      "preview": "Remote end closed connection without response"
+    },
+    {
+      "protocol": "responses",
+      "http_status": 0,
+      "elapsed_sec": 65.57,
+      "response_bytes": 45,
+      "raw_json": "D:\\Users\\Mobius\\Desktop\\mine\\AAA-code\\mine-blog\\zzz-prompt-debug\\origin\\OC\\test-dual-image\\out\\2026-07-18-01-05-07-responses.raw.json",
+      "output_png": null,
+      "ok": false,
+      "error": "HTTP 0",
+      "preview": "Remote end closed connection without response"
+    }
+  ]
+}

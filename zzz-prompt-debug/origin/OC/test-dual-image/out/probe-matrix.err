@@ -1,0 +1,4 @@
+  File "D:\Users\Mobius\Desktop\mine\AAA-code\mine-blog\zzz-prompt-debug\origin\OC\test-dual-image\probe_matrix.py", line 129
+    log(f'  head: {row[\"head\"]}')
+                                  ^
+SyntaxError: f-string expression part cannot include a backslash
