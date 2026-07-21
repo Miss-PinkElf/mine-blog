@@ -33,8 +33,7 @@ handoff，使用devflow这个skills的子skill；
    2. 你需要再回顾一下本次的对话，再次核对一下，同时现在阅读根目录devflow-handoff.md收尾（这个是收尾指导文档不用修改）
    3. 同时把你没有收尾的文档更新一下,然后提交相关的代码（收尾哪个mission，就提交相关的文件）
       把你没有更新的文档记得更新,等会直接提交即可（只提交和本次对话相关的代码（不用精确到行，如何某一行或者某一段不是这次对话的，你可以询问我），如果出现不相关的可能是另外一个codex/claude修改的，或者是我之前修改的
-   4. 默认不用提交config.ts，gitignore,tsconfig.json,
-   5. 不用向我确认，先提交代码之后再收尾
+   4. 不用向我确认，先提交代码之后再收尾
    ```
 
 2. 快速收尾：
@@ -89,4 +88,4 @@ handoff，使用devflow这个skills的子skill；
     ```
 
 15. lsof -ti:3721 | xargs kill && npm run start
-16. export http_proxy=http://127.0.0.1:7897 https_proxy=http://127.0.0.1:7897 all_proxy=socks5://127.0.0.1:7897 HTTP_PROXY=$http_proxy HTTPS_PROXY=$https_proxy ALL_PROXY=$all_prox
+16. export http_proxy=http://127.0.0.1:7897 https_proxy=http://127.0.0.1:7897 all_proxy=socks5://127.0.0.1:7897 HTTP_PROXY=$http_proxy HTTPS_PROXY=$https_proxy ALL_PROXY=$all_proxy
